@@ -268,3 +268,190 @@ nav{
 }
 
 }
+/* ===========================
+   RIDE OPTIONS - Blessey
+=========================== */
+
+.ride-options{
+    padding:80px 0;
+    background:#ffffff;
+}
+
+.section-title{
+    text-align:center;
+    font-size:40px;
+    margin-bottom:50px;
+    color:#000;
+}
+
+.ride-cards{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    flex-wrap:wrap;
+}
+
+.ride-card{
+    width:300px;
+    background:#fff;
+    border-radius:15px;
+    padding:30px;
+    text-align:center;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    transition:.3s;
+}
+
+.ride-card:hover{
+    transform:translateY(-8px);
+}
+
+.ride-card img{
+    width:120px;
+    height:120px;
+    object-fit:contain;
+    margin-bottom:20px;
+}
+
+.ride-card h3{
+    font-size:24px;
+    margin-bottom:10px;
+}
+
+.ride-card p{
+    color:#666;
+    line-height:1.6;
+}
+
+/* ===========================
+   SAFETY SECTION - Blessey
+=========================== */
+
+.safety{
+    background:#f6f6f6;
+    padding:80px 0;
+}
+
+.safety-container{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:60px;
+}
+
+.safety-image{
+    flex:1;
+}
+
+.safety-image img{
+    width:100%;
+    border-radius:15px;
+}
+
+.safety-content{
+    flex:1;
+}
+
+.safety-content h2{
+    font-size:42px;
+    margin-bottom:20px;
+}
+
+.safety-content p{
+    color:#555;
+    line-height:1.8;
+    margin-bottom:30px;
+}
+
+.learn-btn{
+    background:#000;
+    color:#fff;
+    border:none;
+    padding:14px 30px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.learn-btn:hover{
+    background:#333;
+}
+
+/* ===========================
+   WHY CHOOSE UBER - Blessey
+=========================== */
+
+.why-uber{
+    padding:80px 0;
+    background:#ffffff;
+}
+
+.why-cards{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    flex-wrap:wrap;
+}
+
+.why-card{
+    width:300px;
+    background:#fff;
+    padding:30px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    transition:.3s;
+}
+
+.why-card:hover{
+    transform:translateY(-8px);
+}
+
+.why-card h3{
+    font-size:24px;
+    margin-bottom:15px;
+}
+
+.why-card p{
+    color:#666;
+    line-height:1.6;
+}
+
+/* ===========================
+   BLESSEY RESPONSIVE
+=========================== */
+
+@media(max-width:992px){
+
+.ride-cards,
+.why-cards{
+    flex-direction:column;
+    align-items:center;
+}
+
+.safety-container{
+    flex-direction:column;
+    text-align:center;
+}
+
+.safety-content h2{
+    font-size:34px;
+}
+
+}
+
+@media(max-width:768px){
+
+.section-title{
+    font-size:32px;
+}
+
+.ride-card,
+.why-card{
+    width:100%;
+}
+
+.learn-btn{
+    width:100%;
+}
+
+}
