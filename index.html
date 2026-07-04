@@ -6,9 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uber Clone</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/navbar.css">
 </head>
 
 <body>
+
+    <!-- Loading Animation -->
+    <div id="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Scroll Progress Bar -->
+    <div id="progress-bar"></div>
 
     <!-- ================= HEADER ================= -->
 
@@ -21,12 +30,18 @@
                     <img src="images/logo.png" alt="Uber Logo">
                 </div>
 
-                <nav>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <nav id="nav-menu">
                     <ul class="nav-links">
-                        <li><a href="#">Ride</a></li>
-                        <li><a href="#">Drive</a></li>
-                        <li><a href="#">Business</a></li>
-                        <li><a href="#">About</a></li>
+                        <li><a href="#ride-options" class="nav-item">Ride</a></li>
+                        <li><a href="#safety" class="nav-item">Drive</a></li>
+                        <li><a href="#why-uber" class="nav-item">Business</a></li>
+                        <li><a href="#footer" class="nav-item">About</a></li>
                     </ul>
                 </nav>
 
@@ -178,7 +193,7 @@
 
    <!-- ================= FOOTER ================= -->
 
-<footer class="footer">
+<footer id="footer" class="footer">
 
     <div class="container footer-container">
 
@@ -222,6 +237,10 @@
 
 </footer>
 
+    <!-- Back to Top Button -->
+    <button id="back-to-top" title="Go to top">&#8679;</button>
+
+    <script src="js/navbar.js"></script>
 </body>
 
 </html>
