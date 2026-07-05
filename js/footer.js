@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         footerElements.forEach((el, index) => {
-            el.style.transitionDelay = \`\${index * 0.1}s\`;
+            el.style.transitionDelay = `${index * 0.1}s`;
             footerObserver.observe(el);
         });
     }
