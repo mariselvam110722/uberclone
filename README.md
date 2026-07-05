@@ -1,25 +1,29 @@
 # 🚖 Uber Clone
 
-A responsive **Uber landing page clone** developed using **HTML5** and **CSS3** as part of the **IndiWebPros Week 2 Team Assignment**.
+A responsive **Uber Landing Page Clone** developed using **HTML5, CSS3, JavaScript, Git, and GitHub** as part of the IndiWebPros Week 2 Team Assignment.
 
 ---
 
-## 📌 Team Details
+## 🌐 Live Project
 
-**Team Name:** DevVerse
+Open `index.html` in your browser to view the project.
 
-**Platform:** Uber
+---
+
+## 📌 Project Overview
+
+This project recreates the Uber landing page with a modern responsive design and interactive JavaScript features. It was developed collaboratively using Git branches and Pull Requests.
 
 ---
 
 ## 👥 Team Members
 
-| Member | Role |
-|---------|------|
-| Mariselvam S (Team Leader) | Project Setup, Header, Navigation Bar, GitHub Management & Final Integration |
-| Mohan M | Hero Section & Booking Section |
-| Blessey Kiruba B | Ride Options, Safety Section & Why Choose Uber |
-| Pavan G | Footer, Responsive Design, Testing & Bug Fixes |
+| Member | Contribution |
+|---------|--------------|
+| **Mariselvam S (Team Leader)** | Project Setup, Header & Navigation, GitHub Management, Final Integration, Navigation JavaScript |
+| **Mohan M** | Hero Section, Booking Card, Hero JavaScript Features |
+| **Blessey Kiruba B** | Ride Options, Safety, Why Choose Uber Sections, JavaScript Interactions |
+| **Pavan G** | Footer, Responsive Design, Footer JavaScript, Testing & Bug Fixes |
 
 ---
 
@@ -27,13 +31,26 @@ A responsive **Uber landing page clone** developed using **HTML5** and **CSS3** 
 
 - HTML5
 - CSS3
+- JavaScript (Vanilla JS)
+- Git
+- GitHub
 
 ---
 
-## 📁 Project Structure
+## 📂 Project Structure
 
-```
-uber-clone/
+```text
+uberclone/
+│
+├── css/
+│   ├── style.css
+│   └── navbar.css
+│
+├── js/
+│   ├── navbar.js
+│   ├── hero.js
+│   ├── rides.js
+│   └── footer.js
 │
 ├── images/
 │   ├── logo.png
@@ -43,7 +60,6 @@ uber-clone/
 │   └── uber-go.png
 │
 ├── index.html
-├── style.css
 └── README.md
 ```
 
@@ -51,12 +67,35 @@ uber-clone/
 
 ## ✨ Features
 
+### HTML & CSS
 - Responsive Navigation Bar
-- Uber Logo
-- Login & Sign Up Buttons
+- Hero Section
+- Booking Card
+- Ride Options Section
+- Safety Section
+- Why Choose Uber
+- Responsive Footer
 - Mobile-Friendly Layout
-- Clean UI
-- Built using only HTML and CSS
+
+### JavaScript
+- Responsive Hamburger Menu
+- Smooth Scrolling Navigation
+- Sticky Header
+- Active Navigation Highlight
+- Hero Form Validation
+- Ride Selection Interaction
+- Dark Mode Toggle
+- Back to Top Button
+- Dynamic Footer Year
+
+---
+
+## 🔀 GitHub Collaboration
+
+- Individual Git branches for each member
+- Pull Requests for every feature
+- Code review and merge by Team Leader
+- Version control using Git & GitHub
 
 ---
 
@@ -65,24 +104,24 @@ uber-clone/
 1. Clone the repository
 
 ```bash
-git clone https://github.com/mariselvam110722/git-clone.git
+git clone https://github.com/mariselvam110722/uberclone.git
 ```
 
 2. Open the project folder.
 
-3. Open `index.html` in any web browser.
+3. Open `index.html` in your browser.
 
 ---
 
-## 📷 Preview
+## 📸 Preview
 
-The project recreates the Uber landing page interface using HTML and CSS.
+A responsive Uber landing page with interactive JavaScript features.
 
 ---
 
 ## 📌 Repository
 
-https://github.com/mariselvam110722/git-clone
+https://github.com/mariselvam110722/uberclone
 
 ---
 
@@ -91,5 +130,3 @@ https://github.com/mariselvam110722/git-clone
 **Team DevVerse**
 
 **Team Leader:** Mariselvam S
-
-IndiWebPros Week 2 Team Assignment
