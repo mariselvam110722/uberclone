@@ -1,0 +1,130 @@
+/* ===========================
+   HERO SECTION
+=========================== */
+
+.hero {
+  padding: 80px 0;
+  background: #f8f8f8;
+}
+
+.hero-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 60px;
+}
+
+.hero-content {
+  flex: 1;
+}
+
+.hero-content h1 {
+  font-size: 52px;
+  color: #000;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.hero-content p {
+  font-size: 18px;
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+.booking-card {
+  width: 420px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.booking-card input {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: none;
+  outline: none;
+  background: #f3f3f3;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.booking-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.ride-btn {
+  flex: 1;
+  padding: 14px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.ride-btn:hover {
+  background: #333;
+}
+
+.schedule-btn {
+  flex: 1;
+  padding: 14px;
+  background: #e6e6e6;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.schedule-btn:hover {
+  background: #d5d5d5;
+}
+
+.hero-image {
+  flex: 1;
+  text-align: right;
+}
+
+.hero-image img {
+  width: 100%;
+  max-width: 550px;
+  border-radius: 15px;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media (max-width: 992px) {
+  .hero-container {
+    flex-direction: column-reverse;
+    text-align: center;
+    gap: 40px;
+  }
+
+  .hero-content h1 {
+    font-size: 40px;
+  }
+
+  .booking-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .booking-buttons {
+    flex-direction: column;
+  }
+
+  .hero-image img {
+    max-width: 100%;
+  }
+}
