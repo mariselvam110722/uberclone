@@ -38,7 +38,7 @@
   "bugs": {
     "url": "https://github.com/mariselvam110722/uberclone/issues"
   },
-  "homepage": "https://github.com/mariselvam110722/uberclone#readme",
+  "homepage": "https://mariselvam110722.github.io/uberclone/",
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.3",
     "vite": "^8.1.4"
