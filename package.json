@@ -25,7 +25,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -41,6 +43,7 @@
   "homepage": "https://mariselvam110722.github.io/uberclone/",
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.3",
+    "gh-pages": "^6.3.0",
     "vite": "^8.1.4"
   }
 }
