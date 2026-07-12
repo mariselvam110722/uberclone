@@ -1,0 +1,46 @@
+{
+  "name": "uber-clone",
+  "version": "1.0.0",
+  "description": "A responsive **Uber Landing Page Clone** developed using **HTML5, CSS3, JavaScript, Git, and GitHub** as part of the IndiWebPros Week 2 Team Assignment.",
+  "main": "index.js",
+  "dependencies": {
+    "csstype": "^3.2.3",
+    "detect-libc": "^2.1.2",
+    "fdir": "^6.5.0",
+    "lightningcss": "^1.32.0",
+    "lightningcss-win32-x64-msvc": "^1.32.0",
+    "nanoid": "^3.3.15",
+    "oxlint": "^1.73.0",
+    "picocolors": "^1.1.1",
+    "picomatch": "^4.0.5",
+    "postcss": "^8.5.17",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.18.1",
+    "rolldown": "^1.1.5",
+    "scheduler": "^0.27.0",
+    "source-map-js": "^1.2.1",
+    "tinyglobby": "^0.2.17"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mariselvam110722/uberclone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/mariselvam110722/uberclone/issues"
+  },
+  "homepage": "https://github.com/mariselvam110722/uberclone#readme",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.3",
+    "vite": "^8.1.4"
+  }
+}

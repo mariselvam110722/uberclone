@@ -1,18 +1,18 @@
-# 🚖 Uber Clone
+# 🚖 Uber Clone (React)
 
-A responsive **Uber Landing Page Clone** developed using **HTML5, CSS3, JavaScript, Git, and GitHub** as part of the IndiWebPros Week 2 Team Assignment.
+A responsive **Uber Landing Page Clone** migrated to **React** using **Vite**.
 
 ---
 
 ## 🌐 Live Project
 
-Open `index.html` in your browser to view the project.
+Run `npm run dev` in your terminal to view the project locally on `http://localhost:5173`.
 
 ---
 
 ## 📌 Project Overview
 
-This project recreates the Uber landing page with a modern responsive design and interactive JavaScript features. It was developed collaboratively using Git branches and Pull Requests.
+This project recreates the Uber landing page with a modern responsive design. It has been upgraded from Vanilla HTML/CSS/JS to a robust React application powered by Vite.
 
 ---
 
@@ -109,7 +109,21 @@ git clone https://github.com/mariselvam110722/uberclone.git
 
 2. Open the project folder.
 
-3. Open `index.html` in your browser.
+```bash
+cd uberclone
+```
+
+3. Install dependencies:
+
+```bash
+npm install
+```
+
+4. Run the development server:
+
+```bash
+npm run dev
+```
 
 ---
 
