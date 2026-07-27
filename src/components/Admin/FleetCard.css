@@ -1,0 +1,102 @@
+/* FleetCard.css */
+.admin-fleet-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fleet-hdr-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fleet-hdr-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #000000;
+}
+
+.fleet-status-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #eeeeee;
+}
+
+.f-stat-item {
+  text-align: center;
+}
+
+.f-stat-num {
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.f-stat-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: #666666;
+  text-transform: uppercase;
+}
+
+.fleet-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.f-cat-box {
+  border: 1.5px solid #dddddd;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fdfdfd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.f-cat-name {
+  font-weight: 800;
+  color: #000000;
+  font-size: 14px;
+}
+
+.f-cat-sub {
+  font-size: 12px;
+  color: #666666;
+  margin-top: 2px;
+}
+
+.heat-map-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.heat-map-table th {
+  background: #f0f0f0;
+  padding: 12px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 800;
+  color: #555555;
+  border-bottom: 2px solid #dddddd;
+}
+
+.heat-map-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eeeeee;
+  font-size: 14px;
+}
+
+.heat-map-table tr:hover {
+  background: #f9f9f9;
+}

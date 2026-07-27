@@ -4,6 +4,7 @@ import MainLayout from './layouts/MainLayout'
 import Home from './pages/Home'
 import RiderDashboard from './pages/RiderDashboard'
 import DriverDashboard from './pages/DriverDashboard'
+import AdminDashboard from './pages/AdminDashboard'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="rider" element={<RiderDashboard />} />
             <Route path="driver" element={<DriverDashboard />} />
+            <Route path="admin" element={<AdminDashboard />} />
           </Route>
         </Routes>
       </Router>
