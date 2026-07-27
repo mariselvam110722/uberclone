@@ -3,13 +3,14 @@ import { mockTrips } from '../../mock/riderMockData'
 import { rideService } from '../../services/rideService'
 import { paymentService } from '../../services/paymentService'
 import { useAuth } from '../../context/AuthContext'
+import UberMap from '../common/UberMap'
 import './RideConfirmation.css'
 
 /**
  * RideConfirmation Component
- * Reusable modal/overlay displaying real-time driver matching and Firestore ride status lifecycle flow:
+ * Reusable modal/overlay displaying real-time driver matching, Google Maps Trip Progress Map,
+ * Live Driver Movement Simulation, and Firestore ride status lifecycle flow:
  * requested -> accepted -> driver_arrived -> trip_started -> completed / cancelled.
- * Subscribes via onSnapshot so updates from Driver Dashboard appear instantaneously.
  */
 const RideConfirmation = ({ isOpen, onClose, onCompleteTrip, bookingData }) => {
   const { currentUser, refreshProfile } = useAuth()
@@ -41,7 +42,6 @@ const RideConfirmation = ({ isOpen, onClose, onCompleteTrip, bookingData }) => {
             }
           } else if (rideDoc.status === 'completed') {
             setStage('assigned')
-            // Optionally auto-close after brief delay or let user see completed state
           } else if (rideDoc.status === 'cancelled' || rideDoc.status === 'rejected') {
             onClose()
           }
@@ -160,7 +160,7 @@ const RideConfirmation = ({ isOpen, onClose, onCompleteTrip, bookingData }) => {
 
   return (
     <div className="ride-confirm-overlay" onClick={(e) => e.stopPropagation()}>
-      <div className="ride-confirm-card">
+      <div className="ride-confirm-card" style={{ maxWidth: '520px', width: '95%', maxHeight: '90vh', overflowY: 'auto' }}>
         {stage === 'searching' ? (
           <div className="searching-state">
             <span className="searching-icon">📡</span>
@@ -168,6 +168,19 @@ const RideConfirmation = ({ isOpen, onClose, onCompleteTrip, bookingData }) => {
             <div className="searching-sub">
               Broadcasting request for {bookingData.vehicle?.name || bookingData.vehicleType} (${bookingData.total || bookingData.fare})
             </div>
+
+            <div style={{ height: '180px', width: '100%', margin: '16px 0', borderRadius: '12px', overflow: 'hidden' }}>
+              <UberMap
+                pickup={bookingData.pickup}
+                destination={bookingData.destination}
+                vehicle={bookingData.vehicle}
+                rideStatus={rideStatus}
+                showDriverSimulation={true}
+                distance={bookingData.distance?.replace(' km', '')}
+                duration={bookingData.duration?.replace(' mins', '')}
+              />
+            </div>
+
             <div className="search-progress-bar">
               <div className="search-progress-fill"></div>
             </div>
@@ -216,6 +229,20 @@ const RideConfirmation = ({ isOpen, onClose, onCompleteTrip, bookingData }) => {
                 </div>
               </div>
             )}
+
+            {/* Trip Progress Map with Live Driver Movement Simulation */}
+            <div style={{ height: '220px', width: '100%', margin: '14px 0', borderRadius: '12px', overflow: 'hidden' }}>
+              <UberMap
+                pickup={bookingData.pickup}
+                destination={bookingData.destination}
+                vehicle={bookingData.vehicle}
+                rideStatus={rideStatus}
+                showDriverSimulation={true}
+                driver={driver}
+                distance={bookingData.distance?.replace(' km', '')}
+                duration={bookingData.duration?.replace(' mins', '')}
+              />
+            </div>
 
             <div className="trip-summary-box">
               <div className="trip-sum-row">
