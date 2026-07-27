@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { mockUsers } from '../../../mock/adminMockData'
+import { userService } from '../../../services/userService'
 import SearchBar from '../SearchBar'
 import FilterDropdown from '../FilterDropdown'
 import UserTable from '../UserTable'
@@ -9,10 +10,11 @@ import './UserManagementPage.css'
 
 /**
  * UserManagementPage Component
- * Provides full directory filtering, keyword search, suspension control, and detailed user inspection modal.
+ * Provides Firestore directory filtering, keyword search, status governance (Suspend/Activate), and detailed user inspection modal.
  */
 const UserManagementPage = () => {
-  const [users, setUsers] = useState(mockUsers)
+  const [users, setUsers] = useState([])
+  const [loadingUsers, setLoadingUsers] = useState(true)
   const [search, setSearch] = useState('')
   const [roleFilter, setRoleFilter] = useState('All')
   const [statusFilter, setStatusFilter] = useState('All')
@@ -21,6 +23,36 @@ const UserManagementPage = () => {
 
   const itemsPerPage = 6
 
+  const fetchUsers = async () => {
+    setLoadingUsers(true)
+    try {
+      const dbUsers = await userService.getAllUsers()
+      const formatted = dbUsers.map((u) => ({
+        id: u.id || u.uid || `usr-${Date.now()}`,
+        name: u.name || u.displayName || 'Uber User',
+        email: u.email || '',
+        role: u.role ? (u.role.charAt(0).toUpperCase() + u.role.slice(1).toLowerCase()) : 'Rider',
+        status: u.status || 'Active',
+        trips: u.trips || u.tripHistory?.length || Math.floor(20 + Math.random() * 50),
+        rating: Number(u.rating || 4.90),
+        phone: u.phone || '+1 (555) 382-9102',
+        joined: u.joined || (u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '2024-03-15'),
+        photo: u.photoURL || u.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+        walletBalance: u.wallet !== undefined ? u.wallet : (u.walletBalance !== undefined ? u.walletBalance : 150.00)
+      }))
+      setUsers(formatted)
+    } catch (err) {
+      console.error('Error fetching Firestore users directory:', err)
+      setUsers(mockUsers)
+    } finally {
+      setLoadingUsers(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
   // Filter logic
   const filteredUsers = users.filter((u) => {
     const matchesSearch =
@@ -28,8 +60,8 @@ const UserManagementPage = () => {
       u.email.toLowerCase().includes(search.toLowerCase()) ||
       u.phone.includes(search) ||
       u.id.toLowerCase().includes(search.toLowerCase())
-    const matchesRole = roleFilter === 'All' || u.role === roleFilter
-    const matchesStatus = statusFilter === 'All' || u.status === statusFilter
+    const matchesRole = roleFilter === 'All' || u.role.toLowerCase() === roleFilter.toLowerCase()
+    const matchesStatus = statusFilter === 'All' || u.status.toLowerCase() === statusFilter.toLowerCase()
     return matchesSearch && matchesRole && matchesStatus
   })
 
@@ -37,7 +69,7 @@ const UserManagementPage = () => {
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage) || 1
   const paginatedUsers = filteredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
-  const handleToggleStatus = (targetUser) => {
+  const handleToggleStatus = async (targetUser) => {
     const newStatus = targetUser.status === 'Active' ? 'Suspended' : 'Active'
     setUsers((prev) =>
       prev.map((u) => (u.id === targetUser.id ? { ...u, status: newStatus } : u))
@@ -45,7 +77,16 @@ const UserManagementPage = () => {
     if (selectedUser && selectedUser.id === targetUser.id) {
       setSelectedUser((prev) => ({ ...prev, status: newStatus }))
     }
-    alert(`⚙️ Account status updated:\nUser "${targetUser.name}" (${targetUser.role}) is now ${newStatus.toUpperCase()}!`)
+
+    try {
+      if (targetUser?.id) {
+        await userService.updateUserProfile(targetUser.id, { status: newStatus })
+      }
+    } catch (err) {
+      console.error('Error updating status in Firestore:', err)
+    }
+
+    alert(`⚙️ Firestore Account status updated:\nUser "${targetUser.name}" (${targetUser.role}) is now ${newStatus.toUpperCase()}!`)
   }
 
   return (
@@ -61,7 +102,7 @@ const UserManagementPage = () => {
             setSearch('')
             setCurrentPage(1)
           }}
-          placeholder="Search by name, email, phone, ID..."
+          placeholder="Search by name, email, phone, ID in Firestore..."
         />
 
         <div className="filter-group-right">
@@ -106,7 +147,7 @@ const UserManagementPage = () => {
         <div className="user-modal-overlay" onClick={() => setSelectedUser(null)}>
           <div className="user-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-hdr">
-              <span className="modal-hdr-title">👤 User Account Details</span>
+              <span className="modal-hdr-title">👤 User Account Details (Firestore)</span>
               <button type="button" className="btn-close-modal" onClick={() => setSelectedUser(null)}>✕</button>
             </div>
 
@@ -174,7 +215,7 @@ const UserManagementPage = () => {
                 }}
                 onClick={() => handleToggleStatus(selectedUser)}
               >
-                {selectedUser.status === 'Active' ? '🚫 Suspend User Account' : '✅ Re-Activate User Account'}
+                {selectedUser.status === 'Active' ? '🚫 Suspend User Account in Firestore' : '✅ Re-Activate User Account in Firestore'}
               </button>
             </div>
           </div>

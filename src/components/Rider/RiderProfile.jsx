@@ -1,17 +1,35 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { mockRiderProfile } from '../../mock/riderMockData'
+import { userService } from '../../services/userService'
+import { useAuth } from '../../context/AuthContext'
 import './RiderProfile.css'
 
 /**
  * RiderProfile Component (Page/Tab)
- * Displays user identity, rating, membership status, saved addresses, and interactive trip preferences.
+ * Displays user identity, rating, membership status, saved addresses, and Firestore-synced interactive trip preferences.
  */
 const RiderProfile = () => {
-  const [profile] = useState(mockRiderProfile)
-  const [addresses, setAddresses] = useState(mockRiderProfile.savedAddresses)
-  const [preferences, setPreferences] = useState(mockRiderProfile.preferences)
+  const { currentUser, userProfile, refreshProfile } = useAuth()
+  const [profile, setProfile] = useState(mockRiderProfile)
+  const [addresses, setAddresses] = useState(userProfile?.savedAddresses || mockRiderProfile.savedAddresses)
+  const [preferences, setPreferences] = useState(userProfile?.preferencesList || mockRiderProfile.preferences)
 
-  const handleAddAddress = () => {
+  useEffect(() => {
+    if (userProfile) {
+      setProfile({
+        ...mockRiderProfile,
+        name: userProfile.displayName || mockRiderProfile.name,
+        email: userProfile.email || mockRiderProfile.email,
+        phone: userProfile.phone || mockRiderProfile.phone,
+        rating: userProfile.rating || mockRiderProfile.rating,
+        photo: userProfile.photoURL || mockRiderProfile.photo
+      })
+      if (userProfile.savedAddresses) setAddresses(userProfile.savedAddresses)
+      if (userProfile.preferencesList) setPreferences(userProfile.preferencesList)
+    }
+  }, [userProfile])
+
+  const handleAddAddress = async () => {
     const title = prompt('Enter Location Title (e.g. Favorite Cafe):', 'Cafe')
     if (!title) return
     const address = prompt('Enter Full Address:', '123 Market St, San Francisco, CA')
@@ -25,10 +43,20 @@ const RiderProfile = () => {
       note: 'Added via Rider Dashboard'
     }
 
-    setAddresses([...addresses, newAddr])
+    const updatedAddresses = [...addresses, newAddr]
+    setAddresses(updatedAddresses)
+
+    if (currentUser?.uid) {
+      try {
+        await userService.updateUserProfile(currentUser.uid, { savedAddresses: updatedAddresses })
+        await refreshProfile()
+      } catch (err) {
+        console.error('Error updating addresses in Firestore:', err)
+      }
+    }
   }
 
-  const handleTogglePref = (id) => {
+  const handleTogglePref = async (id) => {
     const updated = preferences.map((pref) => {
       if (pref.id === id) {
         const nextVal = pref.value.includes('Preferred') || pref.value.includes('Required') || pref.value.includes('Cool')
@@ -39,6 +67,15 @@ const RiderProfile = () => {
       return pref
     })
     setPreferences(updated)
+
+    if (currentUser?.uid) {
+      try {
+        await userService.updateUserProfile(currentUser.uid, { preferencesList: updated })
+        await refreshProfile()
+      } catch (err) {
+        console.error('Error updating preferences in Firestore:', err)
+      }
+    }
   }
 
   return (
@@ -49,7 +86,7 @@ const RiderProfile = () => {
           <span className="profile-tier-badge">Platinum</span>
         </div>
         <div className="profile-main-info">
-          <div className="profile-name">{profile.name}</div>
+          <div className="profile-name">{profile.name} (Firestore Synced)</div>
           <div className="profile-email">{profile.email}</div>
           <div className="profile-phone">{profile.phone}</div>
           <div className="profile-stats-row">
@@ -58,7 +95,7 @@ const RiderProfile = () => {
               <div className="stat-lbl">Rider Rating</div>
             </div>
             <div className="stat-box">
-              <div className="stat-val">{profile.totalTrips}</div>
+              <div className="stat-val">{userProfile?.tripHistory?.length || profile.totalTrips}</div>
               <div className="stat-lbl">Total Trips</div>
             </div>
             <div className="stat-box">
