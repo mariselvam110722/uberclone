@@ -7,8 +7,9 @@ import './RideConfirmation.css'
 
 /**
  * RideConfirmation Component
- * Reusable modal/overlay displaying simulated real-time driver matching and Firestore ride status lifecycle flow:
+ * Reusable modal/overlay displaying real-time driver matching and Firestore ride status lifecycle flow:
  * requested -> accepted -> driver_arrived -> trip_started -> completed / cancelled.
+ * Subscribes via onSnapshot so updates from Driver Dashboard appear instantaneously.
  */
 const RideConfirmation = ({ isOpen, onClose, onCompleteTrip, bookingData }) => {
   const { currentUser, refreshProfile } = useAuth()
@@ -18,58 +19,77 @@ const RideConfirmation = ({ isOpen, onClose, onCompleteTrip, bookingData }) => {
   const [otp, setOtp] = useState('4829')
 
   useEffect(() => {
-    if (isOpen && bookingData) {
-      setStage('searching')
-      setRideStatus('requested')
-      // Pick a mock driver from trips to assign
-      const randomDriver = mockTrips[0].driver
-      setDriver(randomDriver)
-      setOtp(Math.floor(1000 + Math.random() * 9000).toString())
+    if (!isOpen || !bookingData?.id) return () => {}
 
-      // Step 1: Auto-transition to accepted after 2.5s in Firestore
-      const timer1 = setTimeout(async () => {
-        setStage('assigned')
-        setRideStatus('accepted')
-        if (bookingData?.id) {
-          try {
-            await rideService.acceptRide(bookingData.id, randomDriver)
-          } catch (err) {
-            console.error('Error updating ride to accepted:', err)
+    setStage('searching')
+    setRideStatus('requested')
+    const randomDriver = mockTrips[0].driver
+    setDriver(randomDriver)
+    setOtp(Math.floor(1000 + Math.random() * 9000).toString())
+
+    // REAL-TIME ONSNAPSHOT LISTENER for this specific ride document
+    const unsubscribe = rideService.subscribeToRideById(
+      bookingData.id,
+      (rideDoc) => {
+        if (!rideDoc) return
+        if (rideDoc.status) {
+          setRideStatus(rideDoc.status)
+          if (rideDoc.status === 'accepted' || rideDoc.status === 'driver_arrived' || rideDoc.status === 'trip_started') {
+            setStage('assigned')
+            if (rideDoc.driver) {
+              setDriver(rideDoc.driver)
+            }
+          } else if (rideDoc.status === 'completed') {
+            setStage('assigned')
+            // Optionally auto-close after brief delay or let user see completed state
+          } else if (rideDoc.status === 'cancelled' || rideDoc.status === 'rejected') {
+            onClose()
           }
         }
-      }, 2500)
+      },
+      (err) => console.error('Realtime ride confirmation listener error:', err)
+    )
 
-      // Step 2: Auto-transition to driver_arrived after 6s
-      const timer2 = setTimeout(async () => {
-        setRideStatus('driver_arrived')
-        if (bookingData?.id) {
-          try {
-            await rideService.updateRideStatus(bookingData.id, 'driver_arrived')
-          } catch (err) {
-            console.error('Error updating ride to driver_arrived:', err)
-          }
+    // Step 1: Auto-transition simulation to accepted after 2.5s if still in requested
+    const timer1 = setTimeout(async () => {
+      if (rideStatus === 'requested' && bookingData?.id) {
+        try {
+          await rideService.acceptRide(bookingData.id, randomDriver)
+        } catch (err) {
+          console.error('Error updating ride to accepted:', err)
         }
-      }, 6000)
-
-      // Step 3: Auto-transition to trip_started after 10s
-      const timer3 = setTimeout(async () => {
-        setRideStatus('trip_started')
-        if (bookingData?.id) {
-          try {
-            await rideService.updateRideStatus(bookingData.id, 'trip_started')
-          } catch (err) {
-            console.error('Error updating ride to trip_started:', err)
-          }
-        }
-      }, 10000)
-
-      return () => {
-        clearTimeout(timer1)
-        clearTimeout(timer2)
-        clearTimeout(timer3)
       }
+    }, 2500)
+
+    // Step 2: Auto-transition to driver_arrived after 6s
+    const timer2 = setTimeout(async () => {
+      if (bookingData?.id) {
+        try {
+          await rideService.updateRideStatus(bookingData.id, 'driver_arrived')
+        } catch (err) {
+          console.error('Error updating ride to driver_arrived:', err)
+        }
+      }
+    }, 6000)
+
+    // Step 3: Auto-transition to trip_started after 10s
+    const timer3 = setTimeout(async () => {
+      if (bookingData?.id) {
+        try {
+          await rideService.updateRideStatus(bookingData.id, 'trip_started')
+        } catch (err) {
+          console.error('Error updating ride to trip_started:', err)
+        }
+      }
+    }, 10000)
+
+    return () => {
+      unsubscribe()
+      clearTimeout(timer1)
+      clearTimeout(timer2)
+      clearTimeout(timer3)
     }
-  }, [isOpen, bookingData])
+  }, [isOpen, bookingData?.id])
 
   if (!isOpen || !bookingData) return null
 
@@ -187,12 +207,12 @@ const RideConfirmation = ({ isOpen, onClose, onCompleteTrip, bookingData }) => {
 
             {driver && (
               <div className="driver-profile-box">
-                <img src={driver.photo} alt={driver.name} className="driver-avatar" />
+                <img src={driver.photo || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'} alt={driver.name || 'Driver'} className="driver-avatar" />
                 <div className="driver-info">
-                  <div className="driver-name">{driver.name}</div>
-                  <div className="driver-rating">⭐ {driver.rating} • Top Rated</div>
-                  <div className="car-details">{driver.car}</div>
-                  <div className="plate-badge">{driver.plate}</div>
+                  <div className="driver-name">{driver.name || 'Michael Thornton'}</div>
+                  <div className="driver-rating">⭐ {driver.rating || 4.95} • Top Rated</div>
+                  <div className="car-details">{driver.car || driver.vehicle || 'Toyota Camry'}</div>
+                  <div className="plate-badge">{driver.plate || '7ABC123'}</div>
                 </div>
               </div>
             )}
@@ -219,10 +239,10 @@ const RideConfirmation = ({ isOpen, onClose, onCompleteTrip, bookingData }) => {
             </div>
 
             <div className="confirm-actions-row">
-              <button type="button" className="btn-contact" onClick={() => alert(`Calling driver at ${driver?.phone}...`)}>
+              <button type="button" className="btn-contact" onClick={() => alert(`Calling driver at ${driver?.phone || '+1 (555) 234-5678'}...`)}>
                 <span>📞 Call</span>
               </button>
-              <button type="button" className="btn-contact" onClick={() => alert(`Opening chat with ${driver?.name}...`)}>
+              <button type="button" className="btn-contact" onClick={() => alert(`Opening chat with ${driver?.name || 'Driver'}...`)}>
                 <span>💬 Chat</span>
               </button>
               <button type="button" className="btn-cancel-trip" onClick={handleCancel}>

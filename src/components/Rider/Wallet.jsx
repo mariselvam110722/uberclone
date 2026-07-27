@@ -7,7 +7,8 @@ import './Wallet.css'
 
 /**
  * Wallet Component (Page/Tab)
- * Manages rider Uber Cash balance, quick deposit simulation, payment methods, and Firestore transaction ledger.
+ * Manages rider Uber Cash balance, quick deposit simulation, payment methods, and real-time Firestore transaction ledger.
+ * Subscribes via onSnapshot so whenever payments change, balance and transaction list update automatically without page refresh.
  */
 const Wallet = () => {
   const { currentUser, userProfile, refreshProfile } = useAuth()
@@ -15,41 +16,51 @@ const Wallet = () => {
   const [paymentMethods, setPaymentMethods] = useState(mockWallet.paymentMethods)
   const [transactions, setTransactions] = useState([])
   const [loadingTx, setLoadingTx] = useState(true)
-
-  const fetchTransactions = async () => {
-    setLoadingTx(true)
-    try {
-      const userTxs = await paymentService.getPaymentsByUser(currentUser?.uid)
-      const formatted = userTxs.map((t) => ({
-        id: t.id,
-        description: t.desc || t.description || 'Wallet Transaction',
-        amount: Number(t.amount || 0),
-        date: t.date || (t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'Recent'),
-        type: t.type || 'debit',
-        status: t.status || 'Completed'
-      }))
-      setTransactions(formatted)
-      if (userProfile?.wallet !== undefined) {
-        setBalance(userProfile.wallet)
-      }
-    } catch (err) {
-      console.error('Error loading wallet transactions:', err)
-      setTransactions(mockWallet.transactions)
-    } finally {
-      setLoadingTx(false)
-    }
-  }
+  const [errorTx, setErrorTx] = useState(null)
 
   useEffect(() => {
-    fetchTransactions()
-  }, [currentUser, userProfile])
+    if (userProfile?.wallet !== undefined) {
+      setBalance(userProfile.wallet)
+    }
+  }, [userProfile?.wallet])
+
+  useEffect(() => {
+    setLoadingTx(true)
+    setErrorTx(null)
+
+    // REAL-TIME ONSNAPSHOT LISTENER for user payments
+    const unsubscribe = paymentService.subscribeToUserPayments(
+      currentUser?.uid,
+      (userTxs) => {
+        const formatted = userTxs.map((t) => ({
+          id: t.id,
+          description: t.desc || t.description || 'Wallet Transaction',
+          amount: Number(t.amount || 0),
+          date: t.date || (t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'Recent'),
+          type: t.type || 'debit',
+          status: t.status || 'Completed'
+        }))
+        setTransactions(formatted)
+        setLoadingTx(false)
+      },
+      (err) => {
+        console.error('Realtime error loading wallet transactions:', err)
+        setErrorTx('Failed to sync live wallet transactions.')
+        setLoadingTx(false)
+      }
+    )
+
+    return () => {
+      if (unsubscribe) unsubscribe()
+    }
+  }, [currentUser?.uid])
 
   const handleAddFunds = async (amount) => {
     const newBalance = balance + amount
     setBalance(newBalance)
 
     try {
-      // Record transaction in Firestore
+      // Record transaction in Firestore (onSnapshot will automatically refresh transaction list and generate push notification!)
       await paymentService.createPayment({
         userId: currentUser?.uid || 'usr-1001',
         amount: amount,
@@ -65,7 +76,6 @@ const Wallet = () => {
         await refreshProfile()
       }
 
-      await fetchTransactions()
       alert(`🎉 Successfully added $${amount.toFixed(2)} to your Uber Cash Wallet in Firestore! New balance: $${newBalance.toFixed(2)}`)
     } catch (err) {
       console.error('Error adding funds in Firestore:', err)
@@ -83,11 +93,12 @@ const Wallet = () => {
 
   return (
     <div className="wallet-container">
-      <div className="wallet-header">💳 Uber Wallet & Payment Methods (Firestore Connected)</div>
+      <div className="wallet-header">💳 Uber Wallet & Payment Methods (Real-Time Live Sync)</div>
+      {errorTx && <div style={{ color: '#d32f2f', fontSize: '14px', marginBottom: '8px' }}>⚠️ {errorTx}</div>}
 
       <div className="wallet-balance-card">
         <div className="balance-left">
-          <span className="balance-label">Uber Cash Balance</span>
+          <span className="balance-label">Uber Cash Balance (Live)</span>
           <span className="balance-amount">${balance.toFixed(2)}</span>
         </div>
         <div className="add-funds-box">
@@ -145,19 +156,25 @@ const Wallet = () => {
         ))}
       </div>
 
-      <div className="wallet-section-title">Recent Transactions</div>
+      <div className="wallet-section-title">Recent Transactions (Real-Time Ledger)</div>
       <div className="transactions-list">
-        {transactions.map((tx) => (
-          <div key={tx.id} className="tx-row">
-            <div>
-              <div className="tx-desc">{tx.description}</div>
-              <div className="tx-date">{tx.date} • {tx.status}</div>
+        {loadingTx ? (
+          <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>⏳ Syncing transactions via onSnapshot...</div>
+        ) : transactions.length === 0 ? (
+          <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>No recent transactions found.</div>
+        ) : (
+          transactions.map((tx) => (
+            <div key={tx.id} className="tx-row">
+              <div>
+                <div className="tx-desc">{tx.description}</div>
+                <div className="tx-date">{tx.date} • {tx.status}</div>
+              </div>
+              <div className={`tx-amount ${tx.type}`}>
+                {tx.type === 'credit' || tx.type === 'topup' ? `+$${Math.abs(tx.amount).toFixed(2)}` : `-$${Math.abs(tx.amount).toFixed(2)}`}
+              </div>
             </div>
-            <div className={`tx-amount ${tx.type}`}>
-              {tx.type === 'credit' ? `+$${Math.abs(tx.amount).toFixed(2)}` : `-$${Math.abs(tx.amount).toFixed(2)}`}
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   )

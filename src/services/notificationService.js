@@ -10,37 +10,36 @@ import {
   where, 
   orderBy, 
   addDoc, 
+  onSnapshot,
   serverTimestamp 
 } from 'firebase/firestore'
 import { db } from '../config/firebase'
 
 /**
- * Notification Service (Firestore CRUD & Push Alert Ledger)
- * Encapsulates system alerts, driver arrival notifications, and promotion bulletins in the 'notifications' collection.
- * Supports Create, Read, Update, Delete (CRUD) and auto-seeding.
+ * Notification Service (Firestore CRUD & Real-Time Push Alerts)
+ * Manages system bulletins, ride status updates, and promotions in the 'notifications' collection with onSnapshot support.
  */
 export const notificationService = {
   /**
-   * CREATE: Dispatches a new notification document to Firestore.
-   * @param {Object} data - Notification details (userId, title, message, type, isRead).
+   * CREATE: Creates a new notification for a user in Firestore.
    */
-  async createNotification(data) {
+  async createNotification(notifData) {
     try {
       const notifRef = collection(db, 'notifications')
       
       const payload = {
-        userId: data.userId || 'usr-1001',
-        title: data.title || 'System Notification',
-        message: data.message || data.desc || 'You have a new update from Uber Smart Ride.',
-        type: data.type || 'info', // 'info' | 'ride' | 'promo' | 'alert'
-        isRead: data.isRead !== undefined ? data.isRead : false,
-        time: data.time || 'Just now',
+        userId: notifData.userId || 'usr-1001',
+        title: notifData.title || 'Notification',
+        message: notifData.message || 'You have a new update from Uber Smart Platform.',
+        type: notifData.type || 'info', // 'info' | 'ride' | 'alert' | 'promo'
+        read: false,
+        time: notifData.time || 'Just now',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       }
 
       const docRef = await addDoc(notifRef, payload)
-      return { id: docRef.id, ...payload }
+      return { id: docRef.id, ...payload, createdAt: new Date().toISOString() }
     } catch (error) {
       console.error('Error in notificationService.createNotification:', error)
       throw error
@@ -66,7 +65,51 @@ export const notificationService = {
   },
 
   /**
-   * READ ALL: Retrieves all system notifications from Firestore. Auto-seeds if empty.
+   * REAL-TIME SUBSCRIPTION: Subscribes to all notifications in Firestore with onSnapshot.
+   */
+  subscribeToAllNotifications(callback, onError) {
+    try {
+      const notifRef = collection(db, 'notifications')
+      const unsubscribe = onSnapshot(notifRef, async (snapshot) => {
+        if (snapshot.empty) {
+          const seeded = await this.getAllNotifications()
+          callback(seeded)
+          return
+        }
+        const notifs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+        notifs.sort((a, b) => {
+          const timeA = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : new Date(a.createdAt || 0).getTime()
+          const timeB = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : new Date(b.createdAt || 0).getTime()
+          return timeB - timeA
+        })
+        callback(notifs)
+      }, (error) => {
+        console.error('Realtime error on subscribeToAllNotifications:', error)
+        if (onError) onError(error)
+      })
+      return unsubscribe
+    } catch (error) {
+      console.error('Error starting subscribeToAllNotifications:', error)
+      return () => {}
+    }
+  },
+
+  /**
+   * REAL-TIME SUBSCRIPTION: Subscribes to notifications for a specific user ID.
+   */
+  subscribeToUserNotifications(userId, callback, onError) {
+    return this.subscribeToAllNotifications((all) => {
+      if (!userId) {
+        callback(all)
+        return
+      }
+      const filtered = all.filter((n) => n.userId === userId || n.userId === 'usr-1001' || n.userId === 'all')
+      callback(filtered)
+    }, onError)
+  },
+
+  /**
+   * READ ALL: Retrieves all notifications from Firestore. Auto-seeds if empty.
    */
   async getAllNotifications() {
     try {
@@ -74,19 +117,19 @@ export const notificationService = {
       const snapshot = await getDocs(notifRef)
 
       if (snapshot.empty) {
-        console.warn('Firestore notifications collection is empty. Auto-seeding default alerts...')
-        const sampleNotifs = [
-          { title: '🚕 Ride Completed', message: 'Your ride to Union Square SF completed successfully. Total fare: $34.50.', type: 'ride', time: '2h ago' },
-          { title: '🎁 Uber One Promo', message: 'Enjoy 10% off your next 5 Premier rides with promo code SMART2026.', type: 'promo', time: '1d ago' },
-          { title: '🛡️ Safety Check-in', message: 'Your emergency contacts and PIN verification are active and verified.', type: 'info', time: '3d ago' }
+        console.warn('Firestore notifications collection is empty. Auto-seeding welcome alerts...')
+        const seededNotifs = []
+        const initialAlerts = [
+          { userId: 'usr-1001', title: '🎁 Welcome to Uber Platinum Tier!', message: 'You have unlocked priority customer support and 5% cashback on all Uber Premier rides.', type: 'promo', read: false },
+          { userId: 'usr-1001', title: '🛡️ Safety Feature Update', message: 'Share your live GPS trip status with up to 5 trusted emergency contacts directly from the active ride screen.', type: 'info', read: false },
+          { userId: 'drv-1002', title: '📈 High Surge Alert', message: 'Downtown San Francisco is currently experiencing 1.8x surge demand. Go online to maximize earnings!', type: 'alert', read: false }
         ]
-
-        const seeded = []
-        for (const n of sampleNotifs) {
-          const created = await this.createNotification({ ...n, userId: 'usr-1001' })
-          seeded.push(created)
+        
+        for (const item of initialAlerts) {
+          const created = await this.createNotification(item)
+          seededNotifs.push(created)
         }
-        return seeded
+        return seededNotifs
       }
 
       return snapshot.docs.map((d) => ({
@@ -100,13 +143,13 @@ export const notificationService = {
   },
 
   /**
-   * READ BY USER: Retrieves all notifications for a target user ID.
+   * READ BY USER: Fetches all alerts for a specific user ID.
    */
   async getNotificationsByUser(userId) {
     try {
       const all = await this.getAllNotifications()
       if (!userId) return all
-      return all.filter((n) => n.userId === userId || n.userId === 'usr-1001')
+      return all.filter((n) => n.userId === userId || n.userId === 'usr-1001' || n.userId === 'all')
     } catch (error) {
       console.error('Error fetching user notifications:', error)
       return []
@@ -114,27 +157,20 @@ export const notificationService = {
   },
 
   /**
-   * UPDATE: Marks a notification as read or updates message text.
+   * UPDATE: Marks a notification as read or unread.
    */
-  async updateNotification(id, updates = {}) {
+  async markAsRead(id, read = true) {
     try {
       if (!id) throw new Error('Notification ID required.')
       const notifRef = doc(db, 'notifications', id)
       await updateDoc(notifRef, {
-        ...updates,
+        read: Boolean(read),
         updatedAt: serverTimestamp()
       })
     } catch (error) {
-      console.error('Error updating notification:', error)
+      console.error('Error updating notification read status:', error)
       throw error
     }
-  },
-
-  /**
-   * UPDATE: Helper to quickly mark an alert as read.
-   */
-  async markAsRead(id) {
-    return this.updateNotification(id, { isRead: true })
   },
 
   /**
