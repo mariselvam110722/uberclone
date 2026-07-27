@@ -1,0 +1,75 @@
+/* EarningsDashboard.css */
+.earnings-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.earnings-tx-section {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+}
+
+.earnings-tx-hdr {
+  font-size: 18px;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 16px;
+}
+
+.earnings-tx-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #eeeeee;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.e-tx-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #eeeeee;
+  background: #ffffff;
+  transition: background 0.2s;
+}
+
+.e-tx-row:last-child {
+  border-bottom: none;
+}
+
+.e-tx-row:hover {
+  background: #f9f9f9;
+}
+
+.e-tx-desc {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.e-tx-sub {
+  font-size: 12px;
+  color: #666666;
+  margin-top: 4px;
+}
+
+.e-tx-amt-box {
+  text-align: right;
+}
+
+.e-tx-total {
+  font-size: 18px;
+  font-weight: 900;
+  color: #2e7d32;
+}
+
+.e-tx-tip {
+  font-size: 12px;
+  color: #ff9800;
+  font-weight: 700;
+}

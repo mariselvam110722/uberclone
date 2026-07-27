@@ -1,0 +1,82 @@
+/* PassengerDetailsCard.css */
+.pax-details-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+  margin-bottom: 20px;
+}
+
+.pax-hdr-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pax-profile-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pax-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #000000;
+}
+
+.pax-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #000000;
+}
+
+.pax-rating {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555555;
+  margin-top: 2px;
+}
+
+.pax-actions-wrap {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-pax-contact {
+  padding: 10px 16px;
+  background: #f0f0f0;
+  border: 1.5px solid #cccccc;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111111;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-pax-contact:hover {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.pax-note-row {
+  background: #fff8e1;
+  border-left: 4px solid #ffc107;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #5d4037;
+  margin-top: 12px;
+  font-weight: 500;
+}

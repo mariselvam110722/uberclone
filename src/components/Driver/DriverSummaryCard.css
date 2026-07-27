@@ -1,0 +1,103 @@
+/* DriverSummaryCard.css */
+.driver-summary-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.driver-summary-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.drv-avatar-wrap {
+  position: relative;
+}
+
+.drv-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #000000;
+}
+
+.drv-tier-badge {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000000;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.drv-main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.drv-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #000000;
+}
+
+.drv-car-info {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444444;
+}
+
+.drv-plate-badge {
+  display: inline-block;
+  background: #f0f0f0;
+  color: #111111;
+  font-family: monospace;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #cccccc;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.driver-summary-right {
+  display: flex;
+  gap: 16px;
+}
+
+.drv-stat-box {
+  background: #f8f9fa;
+  border: 1px solid #eeeeee;
+  border-radius: 12px;
+  padding: 12px 18px;
+  text-align: center;
+}
+
+.drv-stat-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: #000000;
+}
+
+.drv-stat-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: #666666;
+  text-transform: uppercase;
+  margin-top: 2px;
+}

@@ -1,0 +1,137 @@
+/* DriverRatingCard.css */
+.driver-rating-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+}
+
+.rating-card-hdr {
+  font-size: 18px;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 20px;
+}
+
+.rating-top-split {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.overall-score-box {
+  text-align: center;
+  background: #f8f9fa;
+  border: 2px solid #000000;
+  border-radius: 16px;
+  padding: 16px 28px;
+}
+
+.score-num {
+  font-size: 42px;
+  font-weight: 900;
+  color: #000000;
+  line-height: 1;
+}
+
+.score-stars {
+  font-size: 18px;
+  color: #ffc107;
+  margin: 6px 0;
+}
+
+.score-total {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666666;
+}
+
+.rating-bars-wrap {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.star-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444444;
+}
+
+.star-bar-track {
+  flex: 1;
+  height: 8px;
+  background: #eeeeee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.star-bar-fill {
+  height: 100%;
+  background: #000000;
+  border-radius: 4px;
+}
+
+.compliments-section {
+  margin-top: 24px;
+  border-top: 1px solid #eeeeee;
+  padding-top: 20px;
+}
+
+.compliments-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.comp-badge {
+  background: #f0f0f0;
+  border: 1px solid #dddddd;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111111;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reviews-section {
+  margin-top: 24px;
+  border-top: 1px solid #eeeeee;
+  padding-top: 20px;
+}
+
+.review-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.review-item:last-child {
+  border-bottom: none;
+}
+
+.rev-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 4px;
+}
+
+.rev-comment {
+  font-size: 13px;
+  color: #555555;
+  font-style: italic;
+}

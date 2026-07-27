@@ -1,0 +1,72 @@
+/* DriverProfilePage.css */
+.driver-profile-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.docs-section-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+}
+
+.docs-hdr {
+  font-size: 18px;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 16px;
+}
+
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.doc-card {
+  border: 1.5px solid #dddddd;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fdfdfd;
+}
+
+.doc-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.doc-icon {
+  font-size: 26px;
+}
+
+.doc-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.doc-expiry {
+  font-size: 12px;
+  color: #666666;
+}
+
+.doc-status-badge {
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.doc-status-badge.passed {
+  background: #ebf5ff;
+  color: #0070f3;
+}
