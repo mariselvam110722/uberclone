@@ -1,15 +1,16 @@
 import React from 'react'
+import UberMap from '../common/UberMap'
 import './NavigationCard.css'
 
 /**
  * NavigationCard Component
- * Reusable turn-by-turn GPS simulation card displaying live instructions, speed, ETA, and external map shortcuts.
+ * Reusable turn-by-turn GPS simulation card displaying live instructions, speed, ETA, and integrated UberMap telemetry.
  */
 const NavigationCard = ({ trip, status = 'Heading to Pickup' }) => {
   if (!trip) return null
 
   const isPickupPhase = status === 'Heading to Pickup' || status === 'Arrived at Pickup'
-  const targetName = isPickupPhase ? trip.pickup : trip.dropoff
+  const targetName = isPickupPhase ? trip.pickup : trip.dropoff || trip.destination || 'Union Square, Downtown SF'
   const instruction = trip.currentInstruction || (isPickupPhase
     ? 'In 300m, turn right onto Marina Blvd toward Lyon St'
     : 'In 500m, merge onto US-101 S toward SFMOMA')
@@ -28,27 +29,23 @@ const NavigationCard = ({ trip, status = 'Heading to Pickup' }) => {
         </div>
       </div>
 
-      <div className="nav-map-canvas">
-        <div className="nav-grid-lines"></div>
-        <div style={{ zIndex: 1, fontSize: '13px', color: '#ccc', marginBottom: '8px', fontWeight: 600 }}>
-          📍 Live Smart Route • {status}
-        </div>
-
-        <div className="nav-route-track">
-          <div className="nav-route-active"></div>
-          <span className="nav-car-marker">🚕</span>
-          <span className="nav-pin-end">{isPickupPhase ? '🟢' : '🏁'}</span>
-        </div>
-
-        <div style={{ zIndex: 1, fontSize: '12px', color: '#00e676', fontWeight: 700 }}>
-          ✓ Fastest route selected • Avoiding downtown traffic
-        </div>
+      {/* Google Maps Integration & Live Driver Movement Simulation */}
+      <div className="nav-map-canvas" style={{ padding: 0, overflow: 'hidden', border: 'none', background: 'transparent' }}>
+        <UberMap
+          pickup={trip.pickup || '742 Evergreen Terrace, San Francisco, CA'}
+          destination={trip.dropoff || trip.destination || 'Union Square, Downtown SF'}
+          rideStatus={status}
+          showDriverSimulation={true}
+          isDriverView={true}
+          distance={trip.distance?.replace(' km', '')}
+          duration={trip.estTime?.replace(' mins', '') || trip.duration?.replace(' mins', '')}
+        />
       </div>
 
       <div className="nav-stats-footer">
         <div className="nav-stat-group">
           <div className="n-stat">
-            <span className="n-val">{trip.etaToPickup || '3 mins'}</span>
+            <span className="n-val">{trip.etaToPickup || trip.estTime || '3 mins'}</span>
             <span className="n-lbl">Est. Time</span>
           </div>
           <div className="n-stat">
