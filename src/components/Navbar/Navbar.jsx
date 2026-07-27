@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import AuthModal from '../Auth/AuthModal'
 import './Navbar.css'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSticky, setIsSticky] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
+
+  // Auth modal states
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState('login')
+
+  const { currentUser, userProfile, userRole, logout } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,6 +37,12 @@ const Navbar = () => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
+  }
+
+  const openAuthModal = (mode) => {
+    setAuthModalMode(mode)
+    setIsAuthModalOpen(true)
+    setIsMenuOpen(false)
   }
 
   return (
@@ -62,12 +76,32 @@ const Navbar = () => {
             </nav>
 
             <div className={`nav-buttons ${isMenuOpen ? 'active' : ''}`}>
-              <button className="login-btn">Log In</button>
-              <button className="signup-btn">Sign Up</button>
+              {currentUser ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={{ fontSize: '14px', fontWeight: '600', color: isSticky ? '#000' : 'inherit' }}>
+                    👤 {userProfile?.displayName || currentUser.email} ({userRole?.toUpperCase()})
+                  </span>
+                  <button className="login-btn" onClick={logout}>
+                    Log Out
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <button className="login-btn" onClick={() => openAuthModal('login')}>Log In</button>
+                  <button className="signup-btn" onClick={() => openAuthModal('register')}>Sign Up</button>
+                </>
+              )}
             </div>
           </div>
         </div>
       </header>
+
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authModalMode}
+      />
     </>
   )
 }
