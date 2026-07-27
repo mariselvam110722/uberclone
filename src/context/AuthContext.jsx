@@ -9,7 +9,7 @@ const AuthContext = createContext()
 
 /**
  * Custom hook to consume AuthContext cleanly across React components.
- * @returns {Object} { currentUser, userProfile, userRole, loading, login, register, loginWithGoogle, logout, updateRole }
+ * @returns {Object} { currentUser, userProfile, userRole, loading, login, register, loginWithGoogle, logout, updateRole, refreshProfile }
  */
 export const useAuth = () => {
   const context = useContext(AuthContext)
@@ -20,14 +20,34 @@ export const useAuth = () => {
 }
 
 /**
- * AuthProvider Component (Item 5)
- * Wraps the application to provide reactive Firebase authentication state and Firestore user roles.
+ * AuthProvider Component (Authentication Integration)
+ * Wraps the application to provide reactive Firebase authentication state and Firestore user profile data.
+ * Loads & stores: uid, role, wallet, rating, preferences, tripHistory, createdAt.
  */
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
   const [userRole, setUserRole] = useState(null)
   const [loading, setLoading] = useState(true)
+
+  const refreshProfile = async (uidToRefresh = null) => {
+    const targetUid = uidToRefresh || currentUser?.uid
+    if (!targetUid) return null
+    try {
+      let profile = await userService.getUserProfile(targetUid)
+      if (!profile && currentUser) {
+        profile = await userService.createOrUpdateUserProfile(currentUser)
+      }
+      if (profile) {
+        setUserProfile(profile)
+        setUserRole(profile.role || 'rider')
+      }
+      return profile
+    } catch (err) {
+      console.error('Error refreshing profile:', err)
+      return null
+    }
+  }
 
   useEffect(() => {
     // Listen to Firebase authentication state changes
@@ -39,7 +59,8 @@ export const AuthProvider = ({ children }) => {
           // Fetch corresponding user profile & role from Firestore
           let profile = await userService.getUserProfile(user.uid)
           
-          // If profile doesn't exist yet (e.g. first login or edge case), initialize it
+          // If profile doesn't exist yet (e.g. first login or edge case), initialize it in Firestore
+          // Storing: uid, role, wallet, rating, preferences, tripHistory, createdAt
           if (!profile) {
             profile = await userService.createOrUpdateUserProfile(user)
           }
@@ -66,16 +87,19 @@ export const AuthProvider = ({ children }) => {
   // Context helper wrappers
   const login = async (email, password) => {
     const res = await authService.loginWithEmail(email, password)
+    await refreshProfile(res.user?.uid)
     return res
   }
 
   const register = async (email, password, additionalData) => {
     const res = await authService.registerWithEmail(email, password, additionalData)
+    await refreshProfile(res.user?.uid)
     return res
   }
 
   const loginWithGoogle = async (additionalData) => {
     const res = await authService.loginWithGoogle(additionalData)
+    await refreshProfile(res.user?.uid)
     return res
   }
 
@@ -100,7 +124,8 @@ export const AuthProvider = ({ children }) => {
     register,
     loginWithGoogle,
     logout,
-    updateRole
+    updateRole,
+    refreshProfile
   }
 
   return (

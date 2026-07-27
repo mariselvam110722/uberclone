@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   mockDriverProfile,
   mockTodaysStats,
   mockWeeklyEarnings,
   mockActiveTrip
 } from '../mock/driverMockData'
+import { driverService } from '../services/driverService'
+import { useAuth } from '../context/AuthContext'
 import OnlineToggle from '../components/Driver/OnlineToggle'
 import DriverSummaryCard from '../components/Driver/DriverSummaryCard'
 import TodaysTripsCard from '../components/Driver/TodaysTripsCard'
@@ -19,28 +21,50 @@ import './DriverDashboard.css'
 
 /**
  * DriverDashboard Component (Master Container)
- * Orchestrates driver availability state, navigation across 6 distinct sub-modules, and real-time ride simulation.
+ * Orchestrates Firestore-synced driver availability state, navigation across 6 distinct sub-modules, and ride execution.
  */
 const DriverDashboard = () => {
+  const { currentUser, userProfile } = useAuth()
   const [isOnline, setIsOnline] = useState(true)
   const [activeTab, setActiveTab] = useState('dashboard') // 'dashboard' | 'requests' | 'active-ride' | 'earnings' | 'profile' | 'settings'
   const [activeTrip, setActiveTrip] = useState(mockActiveTrip)
   const [stats, setStats] = useState(mockTodaysStats)
   const [weekly, setWeekly] = useState(mockWeeklyEarnings)
 
-  const handleToggleOnline = () => {
-    setIsOnline(!isOnline)
+  useEffect(() => {
+    // Sync initial driver online availability from Firestore or Auth profile
+    const loadDriverStatus = async () => {
+      try {
+        const drv = await driverService.getDriverById(currentUser?.uid || 'drv-1002')
+        if (drv && drv.isOnline !== undefined) {
+          setIsOnline(drv.isOnline)
+        }
+      } catch (err) {
+        console.error('Error loading driver status:', err)
+      }
+    }
+    loadDriverStatus()
+  }, [currentUser])
+
+  const handleToggleOnline = async () => {
+    const nextState = !isOnline
+    setIsOnline(nextState)
+    try {
+      await driverService.updateDriverAvailability(currentUser?.uid || 'drv-1002', nextState)
+    } catch (err) {
+      console.error('Error updating driver online availability in Firestore:', err)
+    }
   }
 
   const handleAcceptRide = (request) => {
     // Transform request into active trip format
     const newActive = {
-      id: `active-${Date.now()}`,
+      id: request.id || `active-${Date.now()}`,
       passenger: request.passenger,
       pickup: request.pickup,
-      dropoff: request.dropoff,
+      dropoff: request.dropoff || request.destination,
       distance: request.distance,
-      estTime: request.estTime,
+      estTime: request.estTime || request.duration,
       fare: request.fare,
       status: 'Heading to Pickup',
       currentInstruction: `Proceed toward ${request.pickup.split(',')[0]}`,
@@ -102,7 +126,7 @@ const DriverDashboard = () => {
     <div className="driver-dashboard-master">
       <div className="driver-top-header">
         <div className="driver-title-box">
-          <h1>🚙 Smart Driver Partner Portal</h1>
+          <h1>🚙 Smart Driver Partner Portal (Firestore Connected)</h1>
           <p>Accept ride requests, track live route GPS navigation, and cash out your weekly earnings</p>
         </div>
         <OnlineToggle isOnline={isOnline} onToggle={handleToggleOnline} />
@@ -127,7 +151,13 @@ const DriverDashboard = () => {
       <div className="driver-tab-view">
         {activeTab === 'dashboard' && (
           <div className="dashboard-overview-grid">
-            <DriverSummaryCard profile={mockDriverProfile} />
+            <DriverSummaryCard profile={{
+              ...mockDriverProfile,
+              name: userProfile?.displayName || mockDriverProfile.name,
+              email: userProfile?.email || mockDriverProfile.email,
+              phone: userProfile?.phone || mockDriverProfile.phone,
+              rating: userProfile?.rating || mockDriverProfile.rating
+            }} />
             <div className="overview-cards-row">
               <TodaysTripsCard stats={stats} />
               <WeeklyEarningsCard earnings={weekly} />

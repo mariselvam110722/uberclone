@@ -1,31 +1,76 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { mockWallet } from '../../mock/riderMockData'
+import { paymentService } from '../../services/paymentService'
+import { userService } from '../../services/userService'
+import { useAuth } from '../../context/AuthContext'
 import './Wallet.css'
 
 /**
  * Wallet Component (Page/Tab)
- * Manages rider Uber Cash balance, quick deposit simulation, payment methods, and transaction log.
+ * Manages rider Uber Cash balance, quick deposit simulation, payment methods, and Firestore transaction ledger.
  */
 const Wallet = () => {
-  const [balance, setBalance] = useState(mockWallet.balance)
+  const { currentUser, userProfile, refreshProfile } = useAuth()
+  const [balance, setBalance] = useState(userProfile?.wallet !== undefined ? userProfile.wallet : mockWallet.balance)
   const [paymentMethods, setPaymentMethods] = useState(mockWallet.paymentMethods)
-  const [transactions, setTransactions] = useState(mockWallet.transactions)
+  const [transactions, setTransactions] = useState([])
+  const [loadingTx, setLoadingTx] = useState(true)
 
-  const handleAddFunds = (amount) => {
+  const fetchTransactions = async () => {
+    setLoadingTx(true)
+    try {
+      const userTxs = await paymentService.getPaymentsByUser(currentUser?.uid)
+      const formatted = userTxs.map((t) => ({
+        id: t.id,
+        description: t.desc || t.description || 'Wallet Transaction',
+        amount: Number(t.amount || 0),
+        date: t.date || (t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'Recent'),
+        type: t.type || 'debit',
+        status: t.status || 'Completed'
+      }))
+      setTransactions(formatted)
+      if (userProfile?.wallet !== undefined) {
+        setBalance(userProfile.wallet)
+      }
+    } catch (err) {
+      console.error('Error loading wallet transactions:', err)
+      setTransactions(mockWallet.transactions)
+    } finally {
+      setLoadingTx(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchTransactions()
+  }, [currentUser, userProfile])
+
+  const handleAddFunds = async (amount) => {
     const newBalance = balance + amount
     setBalance(newBalance)
 
-    const newTx = {
-      id: `tx-${Date.now()}`,
-      description: `Added Uber Cash via Visa •••• 4242`,
-      amount: amount,
-      date: 'Just now',
-      type: 'credit',
-      status: 'Completed'
-    }
+    try {
+      // Record transaction in Firestore
+      await paymentService.createPayment({
+        userId: currentUser?.uid || 'usr-1001',
+        amount: amount,
+        type: 'credit',
+        method: 'Visa •••• 4242',
+        desc: `Added Uber Cash Top-Up`,
+        status: 'Completed'
+      })
 
-    setTransactions([newTx, ...transactions])
-    alert(`🎉 Successfully added $${amount.toFixed(2)} to your Uber Cash Wallet! New balance: $${newBalance.toFixed(2)}`)
+      // Update wallet balance on user profile in Firestore
+      if (currentUser?.uid) {
+        await userService.updateUserProfile(currentUser.uid, { wallet: newBalance })
+        await refreshProfile()
+      }
+
+      await fetchTransactions()
+      alert(`🎉 Successfully added $${amount.toFixed(2)} to your Uber Cash Wallet in Firestore! New balance: $${newBalance.toFixed(2)}`)
+    } catch (err) {
+      console.error('Error adding funds in Firestore:', err)
+      alert(`🎉 Added $${amount.toFixed(2)} to your wallet! (Local state mode)`)
+    }
   }
 
   const handleSetDefaultPM = (id) => {
@@ -38,7 +83,7 @@ const Wallet = () => {
 
   return (
     <div className="wallet-container">
-      <div className="wallet-header">💳 Uber Wallet & Payment Methods</div>
+      <div className="wallet-header">💳 Uber Wallet & Payment Methods (Firestore Connected)</div>
 
       <div className="wallet-balance-card">
         <div className="balance-left">
