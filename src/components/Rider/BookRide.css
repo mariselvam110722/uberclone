@@ -1,0 +1,99 @@
+/* BookRide.css */
+.book-ride-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.book-ride-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.book-ride-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 90px;
+}
+
+.simulated-map-canvas {
+  background: #e8f0fe;
+  border-radius: 12px;
+  border: 2px solid #ccdcee;
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.map-bg-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(#0070f3 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.15;
+}
+
+.map-content {
+  z-index: 1;
+  text-align: center;
+  max-width: 340px;
+}
+
+.map-pin-badge {
+  background: #ffffff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-route-line {
+  height: 4px;
+  width: 140px;
+  background: #0070f3;
+  margin: 12px auto;
+  position: relative;
+  border-radius: 2px;
+}
+
+.map-car-icon {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20px;
+  animation: driveBounce 1s infinite alternate ease-in-out;
+}
+
+@keyframes driveBounce {
+  from { transform: translate(-50%, -10px); }
+  to { transform: translate(-30%, -10px); }
+}
+
+@media (max-width: 968px) {
+  .book-ride-layout {
+    grid-template-columns: 1fr;
+  }
+  .book-ride-right {
+    position: static;
+  }
+}

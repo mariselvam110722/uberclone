@@ -1,0 +1,84 @@
+/* RiderDashboard.css */
+.rider-dashboard-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+  min-height: 80vh;
+}
+
+.rider-dashboard-header {
+  margin-bottom: 24px;
+}
+
+.rider-dashboard-header h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 8px;
+}
+
+.rider-dashboard-header p {
+  font-size: 16px;
+  color: #666666;
+}
+
+.dashboard-nav-tabs {
+  display: flex;
+  gap: 8px;
+  background: #f0f0f0;
+  padding: 6px;
+  border-radius: 12px;
+  margin-bottom: 32px;
+  overflow-x: auto;
+}
+
+.dashboard-tab-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 700;
+  color: #555555;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.dashboard-tab-btn:hover {
+  color: #000000;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.dashboard-tab-btn.active {
+  background: #000000;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-tab-content {
+  animation: tabFadeIn 0.25s ease-out;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-nav-tabs {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+}
