@@ -68,19 +68,26 @@ const Navbar = () => {
 
             <nav className={isMenuOpen ? 'active' : ''}>
               <ul className="nav-links">
-                <li><a href="#ride-options" onClick={() => setIsMenuOpen(false)}>Ride</a></li>
-                <li><a href="#safety" onClick={() => setIsMenuOpen(false)}>Drive</a></li>
-                <li><a href="#why-uber" onClick={() => setIsMenuOpen(false)}>Business</a></li>
-                <li><a href="#footer" onClick={() => setIsMenuOpen(false)}>About</a></li>
+                <li>
+                  <Link to="/rider" onClick={() => setIsMenuOpen(false)} style={{ color: '#0070f3', fontWeight: '700' }}>
+                    🚕 Rider Dashboard
+                  </Link>
+                </li>
+                <li><a href="/#ride-options" onClick={() => setIsMenuOpen(false)}>Ride</a></li>
+                <li><a href="/#safety" onClick={() => setIsMenuOpen(false)}>Drive</a></li>
+                <li><a href="/#why-uber" onClick={() => setIsMenuOpen(false)}>Business</a></li>
+                <li><a href="/#footer" onClick={() => setIsMenuOpen(false)}>About</a></li>
               </ul>
             </nav>
 
             <div className={`nav-buttons ${isMenuOpen ? 'active' : ''}`}>
               {currentUser ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ fontSize: '14px', fontWeight: '600', color: isSticky ? '#000' : 'inherit' }}>
-                    👤 {userProfile?.displayName || currentUser.email} ({userRole?.toUpperCase()})
-                  </span>
+                  <Link to="/rider" style={{ textDecoration: 'none' }}>
+                    <span style={{ fontSize: '14px', fontWeight: '600', color: isSticky ? '#000' : 'inherit', cursor: 'pointer' }}>
+                      👤 {userProfile?.displayName || currentUser.email} ({userRole?.toUpperCase()})
+                    </span>
+                  </Link>
                   <button className="login-btn" onClick={logout}>
                     Log Out
                   </button>

@@ -1,0 +1,236 @@
+/* RideHistory.css */
+.ride-history-container {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+}
+
+.history-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.history-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #000000;
+}
+
+.history-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.history-search-input {
+  padding: 10px 14px;
+  border: 1.5px solid #dddddd;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 220px;
+  outline: none;
+}
+
+.history-search-input:focus {
+  border-color: #000000;
+}
+
+.filter-tabs {
+  display: flex;
+  background: #f0f0f0;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.filter-tab-btn {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555555;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-tab-btn.active {
+  background: #000000;
+  color: #ffffff;
+}
+
+.trips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.trip-card {
+  border: 1.5px solid #eeeeee;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fdfdfd;
+  transition: all 0.2s;
+}
+
+.trip-card:hover {
+  border-color: #cccccc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.trip-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 14px;
+}
+
+.trip-date-veh {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trip-veh-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.trip-date {
+  font-size: 13px;
+  color: #666666;
+}
+
+.trip-status-fare {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.trip-fare {
+  font-size: 18px;
+  font-weight: 800;
+  color: #000000;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-badge.completed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.cancelled {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.trip-route-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.route-point {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #333333;
+}
+
+.route-point-icon {
+  font-size: 16px;
+}
+
+.trip-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f8f8;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.trip-driver-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.driver-mini-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.driver-mini-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.driver-mini-car {
+  font-size: 12px;
+  color: #666666;
+}
+
+.trip-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-rebook {
+  padding: 8px 14px;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-rebook:hover {
+  background: #333333;
+}
+
+.btn-receipt {
+  padding: 8px 14px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-receipt:hover {
+  background: #f0f0f0;
+}
