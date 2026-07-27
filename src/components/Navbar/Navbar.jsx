@@ -78,6 +78,11 @@ const Navbar = () => {
                     🚙 Driver Dashboard
                   </Link>
                 </li>
+                <li>
+                  <Link to="/admin" onClick={() => setIsMenuOpen(false)} style={{ color: '#d32f2f', fontWeight: '700' }}>
+                    🛠️ Admin Dashboard
+                  </Link>
+                </li>
                 <li><a href="/#ride-options" onClick={() => setIsMenuOpen(false)}>Ride</a></li>
                 <li><a href="/#safety" onClick={() => setIsMenuOpen(false)}>Drive</a></li>
                 <li><a href="/#why-uber" onClick={() => setIsMenuOpen(false)}>Business</a></li>

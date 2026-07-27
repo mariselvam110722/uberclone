@@ -1,0 +1,50 @@
+/* DriverVerificationPage.css */
+.driver-verif-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.verif-tab-switch {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid #eeeeee;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.verif-title-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.verif-badge-cnt {
+  background: #f57f17;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+.btn-toggle-directory {
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-toggle-directory:hover {
+  background: #333333;
+}

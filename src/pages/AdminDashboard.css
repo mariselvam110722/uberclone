@@ -1,0 +1,118 @@
+/* AdminDashboard.css */
+.admin-dashboard-master {
+  max-width: 1280px;
+  margin: 30px auto 60px;
+  padding: 0 20px;
+  min-height: 80vh;
+}
+
+.admin-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: #ffffff;
+  padding: 22px 26px;
+  border-radius: 16px;
+  border: 1px solid #eeeeee;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.admin-title-box h1 {
+  font-size: 30px;
+  font-weight: 900;
+  color: #000000;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-title-box p {
+  font-size: 15px;
+  color: #666666;
+}
+
+.system-health-pill {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1.5px solid #c8e6c9;
+  padding: 8px 16px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.health-pulse-dot {
+  width: 10px;
+  height: 10px;
+  background: #00e676;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(0, 230, 118, 0.25);
+  animation: pulseHealth 1.5s infinite;
+}
+
+@keyframes pulseHealth {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.5); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 230, 118, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+}
+
+.admin-nav-tabs {
+  display: flex;
+  gap: 8px;
+  background: #f0f0f0;
+  padding: 6px;
+  border-radius: 14px;
+  margin-bottom: 28px;
+  overflow-x: auto;
+}
+
+.adm-tab-btn {
+  flex: 1;
+  padding: 14px 18px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  color: #555555;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.adm-tab-btn:hover {
+  color: #000000;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.adm-tab-btn.active {
+  background: #000000;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.admin-tab-view {
+  animation: admFadeIn 0.25s ease-out;
+}
+
+@keyframes admFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

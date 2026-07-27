@@ -1,0 +1,74 @@
+/* AnalyticsPage.css */
+.admin-analytics-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.analytics-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.cancellation-reasons-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #eeeeee;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.reasons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.reason-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.reason-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: #eeeeee;
+  border-radius: 4px;
+  margin: 0 16px;
+  overflow: hidden;
+}
+
+.reason-bar-fill {
+  height: 100%;
+  background: #e53935;
+  border-radius: 4px;
+}
+
+.peak-hours-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.peak-box {
+  background: #fdfdfd;
+  border: 1.5px solid #eeeeee;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+@media (max-width: 968px) {
+  .analytics-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}

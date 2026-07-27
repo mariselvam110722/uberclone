@@ -1,0 +1,24 @@
+/* OverviewPage.css */
+.admin-overview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.kpi-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.overview-bottom-split {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 968px) {
+  .overview-bottom-split {
+    grid-template-columns: 1fr;
+  }
+}

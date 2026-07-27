@@ -1,0 +1,19 @@
+/* DriverTable.css */
+.driver-tbl-container {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+  overflow: hidden;
+}
+
+.veh-info-pill {
+  background: #f0f4f8;
+  border: 1px solid #d9e2ec;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #102a43;
+  display: inline-block;
+}

@@ -1,0 +1,18 @@
+/* ReportsPage.css */
+.admin-reports-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.reports-split-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 968px) {
+  .reports-split-row {
+    grid-template-columns: 1fr;
+  }
+}

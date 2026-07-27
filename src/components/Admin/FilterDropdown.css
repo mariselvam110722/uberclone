@@ -1,0 +1,30 @@
+/* FilterDropdown.css */
+.admin-filter-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-lbl {
+  font-size: 13px;
+  font-weight: 700;
+  color: #555555;
+  white-space: nowrap;
+}
+
+.admin-filter-select {
+  padding: 10px 14px;
+  border: 1.5px solid #dddddd;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111111;
+  background: #ffffff;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-filter-select:focus {
+  border-color: #000000;
+}
