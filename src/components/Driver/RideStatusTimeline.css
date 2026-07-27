@@ -1,0 +1,119 @@
+/* RideStatusTimeline.css */
+.timeline-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+}
+
+.timeline-hdr {
+  font-size: 18px;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 20px;
+}
+
+.timeline-steps-row {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 28px;
+  padding: 0 10px;
+}
+
+.timeline-line-bg {
+  position: absolute;
+  top: 18px;
+  left: 24px;
+  right: 24px;
+  height: 4px;
+  background: #eeeeee;
+  z-index: 1;
+}
+
+.timeline-step {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  text-align: center;
+}
+
+.step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #dddddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: #888888;
+  transition: all 0.3s;
+}
+
+.timeline-step.active .step-circle {
+  border-color: #0070f3;
+  background: #0070f3;
+  color: #ffffff;
+  box-shadow: 0 0 0 6px rgba(0, 112, 243, 0.15);
+}
+
+.timeline-step.completed .step-circle {
+  border-color: #2e7d32;
+  background: #2e7d32;
+  color: #ffffff;
+}
+
+.step-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: #777777;
+  max-width: 90px;
+}
+
+.timeline-step.active .step-lbl {
+  color: #0070f3;
+  font-weight: 800;
+}
+
+.timeline-step.completed .step-lbl {
+  color: #2e7d32;
+}
+
+.btn-advance-status {
+  width: 100%;
+  padding: 16px;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.btn-advance-status:hover {
+  background: #2e7d32;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(46, 125, 50, 0.35);
+}
+
+.btn-advance-status.complete {
+  background: #2e7d32;
+}
+
+.btn-advance-status.complete:hover {
+  background: #1b5e20;
+}

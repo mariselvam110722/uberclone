@@ -1,0 +1,105 @@
+/* DriverDashboard.css */
+.driver-dashboard-master {
+  max-width: 1240px;
+  margin: 30px auto 60px;
+  padding: 0 20px;
+  min-height: 80vh;
+}
+
+.driver-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: #ffffff;
+  padding: 20px 24px;
+  border-radius: 16px;
+  border: 1px solid #eeeeee;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.driver-title-box h1 {
+  font-size: 30px;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 4px;
+}
+
+.driver-title-box p {
+  font-size: 15px;
+  color: #666666;
+}
+
+.driver-nav-tabs {
+  display: flex;
+  gap: 8px;
+  background: #f0f0f0;
+  padding: 6px;
+  border-radius: 14px;
+  margin-bottom: 28px;
+  overflow-x: auto;
+}
+
+.drv-tab-btn {
+  flex: 1;
+  padding: 12px 18px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  color: #555555;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.drv-tab-btn:hover {
+  color: #000000;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.drv-tab-btn.active {
+  background: #000000;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.driver-tab-view {
+  animation: drvFadeIn 0.25s ease-out;
+}
+
+@keyframes drvFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-overview-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.overview-cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 968px) {
+  .overview-cards-row {
+    grid-template-columns: 1fr;
+  }
+}

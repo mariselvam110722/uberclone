@@ -1,0 +1,90 @@
+/* DriverSettings.css */
+.settings-container {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+}
+
+.settings-hdr {
+  font-size: 20px;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 24px;
+}
+
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px;
+  border: 1.5px solid #eeeeee;
+  border-radius: 12px;
+  background: #fdfdfd;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.setting-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.setting-icon {
+  font-size: 28px;
+}
+
+.setting-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.setting-desc {
+  font-size: 13px;
+  color: #666666;
+}
+
+.setting-select {
+  padding: 10px 16px;
+  border: 1.5px solid #cccccc;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111111;
+  background: #ffffff;
+  outline: none;
+  cursor: pointer;
+}
+
+.setting-select:focus {
+  border-color: #000000;
+}
+
+.btn-toggle-setting {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-toggle-setting.on {
+  background: #2e7d32;
+  color: #ffffff;
+}
+
+.btn-toggle-setting.off {
+  background: #e0e0e0;
+  color: #555555;
+}

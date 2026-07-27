@@ -1,0 +1,60 @@
+/* AcceptRejectButtons.css */
+.accept-reject-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.btn-reject-ride {
+  flex: 1;
+  background: #f0f0f0;
+  border: 1.5px solid #cccccc;
+  color: #333333;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-reject-ride:hover:not(:disabled) {
+  background: #e0e0e0;
+  border-color: #aaaaaa;
+}
+
+.btn-accept-ride {
+  flex: 2;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.btn-accept-ride:hover:not(:disabled) {
+  background: #2e7d32;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(46, 125, 50, 0.35);
+}
+
+.btn-reject-ride:disabled,
+.btn-accept-ride:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

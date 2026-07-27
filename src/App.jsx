@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext'
 import MainLayout from './layouts/MainLayout'
 import Home from './pages/Home'
 import RiderDashboard from './pages/RiderDashboard'
+import DriverDashboard from './pages/DriverDashboard'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Home />} />
             <Route path="rider" element={<RiderDashboard />} />
+            <Route path="driver" element={<DriverDashboard />} />
           </Route>
         </Routes>
       </Router>

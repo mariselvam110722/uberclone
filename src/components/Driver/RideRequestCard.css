@@ -1,0 +1,147 @@
+/* RideRequestCard.css */
+.ride-req-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  border: 2px solid #000000;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.req-timer-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: #eeeeee;
+}
+
+.req-timer-fill {
+  height: 100%;
+  background: #ff9800;
+  transition: width 1s linear;
+}
+
+.req-timer-fill.urgent {
+  background: #d32f2f;
+}
+
+.req-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px dashed #eeeeee;
+  padding-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.req-fare-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.req-fare-val {
+  font-size: 32px;
+  font-weight: 900;
+  color: #2e7d32;
+  line-height: 1;
+}
+
+.req-surge-badge {
+  display: inline-block;
+  background: #fff3e0;
+  color: #e65100;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #ffe0b2;
+  margin-top: 4px;
+  width: fit-content;
+}
+
+.req-pax-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.req-pax-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #000000;
+}
+
+.req-pax-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.req-pax-rating {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666666;
+}
+
+.req-route-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.req-route-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.req-route-icon {
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.req-route-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: #888888;
+  text-transform: uppercase;
+}
+
+.req-route-addr {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.req-trip-summary-pills {
+  display: flex;
+  gap: 10px;
+  background: #f8f9fa;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444444;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.req-note-box {
+  background: #fff8e1;
+  border-left: 3px solid #ffc107;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #5d4037;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}

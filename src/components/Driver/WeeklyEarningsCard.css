@@ -1,0 +1,133 @@
+/* WeeklyEarningsCard.css */
+.weekly-earnings-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+}
+
+.weekly-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.weekly-title-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.weekly-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #000000;
+}
+
+.weekly-sub {
+  font-size: 13px;
+  color: #666666;
+}
+
+.btn-instant-cashout {
+  background: #2e7d32;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
+}
+
+.btn-instant-cashout:hover {
+  background: #1b5e20;
+  transform: translateY(-2px);
+}
+
+.weekly-total-banner {
+  background: linear-gradient(135deg, #000000 0%, #222222 100%);
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.weekly-total-lbl {
+  font-size: 13px;
+  color: #aaaaaa;
+  text-transform: uppercase;
+}
+
+.weekly-total-val {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.chart-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 160px;
+  padding-top: 20px;
+  border-bottom: 1.5px solid #eeeeee;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+.chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar-val {
+  font-size: 11px;
+  font-weight: 700;
+  color: #444444;
+}
+
+.bar-fill-wrap {
+  width: 100%;
+  max-width: 32px;
+  height: 100px;
+  background: #f0f0f0;
+  border-radius: 6px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.bar-fill {
+  width: 100%;
+  background: #000000;
+  border-radius: 6px;
+  transition: height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chart-col.today .bar-fill {
+  background: #0070f3;
+}
+
+.chart-col.today .bar-val {
+  color: #0070f3;
+}
+
+.day-lbl {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666666;
+}

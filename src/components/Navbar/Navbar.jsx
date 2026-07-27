@@ -73,6 +73,11 @@ const Navbar = () => {
                     🚕 Rider Dashboard
                   </Link>
                 </li>
+                <li>
+                  <Link to="/driver" onClick={() => setIsMenuOpen(false)} style={{ color: '#2e7d32', fontWeight: '700' }}>
+                    🚙 Driver Dashboard
+                  </Link>
+                </li>
                 <li><a href="/#ride-options" onClick={() => setIsMenuOpen(false)}>Ride</a></li>
                 <li><a href="/#safety" onClick={() => setIsMenuOpen(false)}>Drive</a></li>
                 <li><a href="/#why-uber" onClick={() => setIsMenuOpen(false)}>Business</a></li>
@@ -83,7 +88,7 @@ const Navbar = () => {
             <div className={`nav-buttons ${isMenuOpen ? 'active' : ''}`}>
               {currentUser ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <Link to="/rider" style={{ textDecoration: 'none' }}>
+                  <Link to={userRole === 'driver' ? "/driver" : "/rider"} style={{ textDecoration: 'none' }}>
                     <span style={{ fontSize: '14px', fontWeight: '600', color: isSticky ? '#000' : 'inherit', cursor: 'pointer' }}>
                       👤 {userProfile?.displayName || currentUser.email} ({userRole?.toUpperCase()})
                     </span>
