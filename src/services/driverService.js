@@ -8,22 +8,21 @@ import {
   getDocs, 
   query, 
   where, 
+  onSnapshot,
   serverTimestamp 
 } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import { mockUsers } from '../mock/adminMockData'
 import { mockDriverProfile } from '../mock/driverMockData'
+import { notificationService } from './notificationService'
 
 /**
- * Driver Service (Firestore CRUD & Fleet Telemetry)
- * Encapsulates operations for the 'drivers' collection in Firebase Firestore.
- * Supports Create, Read, Update, Delete (CRUD), availability toggling, and auto-seeding.
+ * Driver Service (Firestore CRUD, Telemetry & Real-Time Availability Tracking)
+ * Encapsulates operations for the 'drivers' collection in Firebase Firestore with onSnapshot support.
  */
 export const driverService = {
   /**
    * CREATE: Registers a new driver document in Firestore.
-   * @param {string} driverId - Unique Driver ID or Firebase Auth UID.
-   * @param {Object} data - Driver profile and vehicle metadata.
    */
   async createDriver(driverId, data = {}) {
     try {
@@ -56,7 +55,6 @@ export const driverService = {
 
   /**
    * READ: Fetches a single driver profile from Firestore by ID.
-   * @param {string} driverId - Target Driver ID.
    */
   async getDriverById(driverId) {
     try {
@@ -70,6 +68,55 @@ export const driverService = {
     } catch (error) {
       console.error('Error fetching driver by ID:', error)
       throw error
+    }
+  },
+
+  /**
+   * REAL-TIME SUBSCRIPTION: Subscribes to all driver records in Firestore with onSnapshot.
+   */
+  subscribeToAllDrivers(callback, onError) {
+    try {
+      const driversRef = collection(db, 'drivers')
+      const unsubscribe = onSnapshot(driversRef, async (snapshot) => {
+        if (snapshot.empty) {
+          const seeded = await this.getAllDrivers()
+          callback(seeded)
+          return
+        }
+        const drivers = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+        callback(drivers)
+      }, (error) => {
+        console.error('Realtime error on subscribeToAllDrivers:', error)
+        if (onError) onError(error)
+      })
+      return unsubscribe
+    } catch (error) {
+      console.error('Error starting subscribeToAllDrivers:', error)
+      return () => {}
+    }
+  },
+
+  /**
+   * REAL-TIME SUBSCRIPTION: Subscribes to a single driver document by ID.
+   */
+  subscribeToDriverById(driverId, callback, onError) {
+    if (!driverId) return () => {}
+    try {
+      const driverRef = doc(db, 'drivers', driverId)
+      const unsubscribe = onSnapshot(driverRef, (snap) => {
+        if (snap.exists()) {
+          callback({ id: snap.id, ...snap.data() })
+        } else {
+          callback(null)
+        }
+      }, (error) => {
+        console.error('Realtime error on subscribeToDriverById:', error)
+        if (onError) onError(error)
+      })
+      return unsubscribe
+    } catch (error) {
+      console.error('Error starting subscribeToDriverById:', error)
+      return () => {}
     }
   },
 
@@ -116,8 +163,7 @@ export const driverService = {
 
   /**
    * UPDATE: Updates Driver Availability (Online / Offline toggle).
-   * @param {string} driverId - Target Driver ID.
-   * @param {boolean} isOnline - True if online/active, false if offline.
+   * Also generates a notification if driver verification status is updated!
    */
   async updateDriverAvailability(driverId, isOnline) {
     try {
@@ -146,6 +192,19 @@ export const driverService = {
         ...updates,
         updatedAt: serverTimestamp()
       })
+
+      if (updates.status === 'Verified' || updates.verification === 'Verified') {
+        try {
+          await notificationService.createNotification({
+            userId: driverId,
+            title: '✅ Driver Verification Approved',
+            message: 'Your documents (License, Insurance, Registration) have been verified. You are approved to drive.',
+            type: 'alert'
+          })
+        } catch (err) {
+          console.error('Error sending driver verification notification:', err)
+        }
+      }
     } catch (error) {
       console.error('Error updating driver profile:', error)
       throw error

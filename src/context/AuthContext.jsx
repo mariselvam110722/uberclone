@@ -20,9 +20,8 @@ export const useAuth = () => {
 }
 
 /**
- * AuthProvider Component (Authentication Integration)
- * Wraps the application to provide reactive Firebase authentication state and Firestore user profile data.
- * Loads & stores: uid, role, wallet, rating, preferences, tripHistory, createdAt.
+ * AuthProvider Component (Authentication Integration & Real-Time Profile Sync)
+ * Wraps the application to provide reactive Firebase authentication state and real-time Firestore user profile data via onSnapshot.
  */
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null)
@@ -50,38 +49,54 @@ export const AuthProvider = ({ children }) => {
   }
 
   useEffect(() => {
+    let profileUnsubscribe = null
+
     // Listen to Firebase authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user)
+
+      if (profileUnsubscribe) {
+        profileUnsubscribe()
+        profileUnsubscribe = null
+      }
 
       if (user) {
         try {
-          // Fetch corresponding user profile & role from Firestore
-          let profile = await userService.getUserProfile(user.uid)
-          
-          // If profile doesn't exist yet (e.g. first login or edge case), initialize it in Firestore
-          // Storing: uid, role, wallet, rating, preferences, tripHistory, createdAt
-          if (!profile) {
-            profile = await userService.createOrUpdateUserProfile(user)
+          // Check if profile exists, otherwise initialize it
+          let initialProfile = await userService.getUserProfile(user.uid)
+          if (!initialProfile) {
+            initialProfile = await userService.createOrUpdateUserProfile(user)
           }
 
-          setUserProfile(profile)
-          setUserRole(profile?.role || 'rider')
+          // Subscribe in real-time to user profile changes (e.g. wallet balance updates, role changes)
+          profileUnsubscribe = userService.subscribeToUserProfile(user.uid, (profile) => {
+            if (profile) {
+              setUserProfile(profile)
+              setUserRole(profile?.role || 'rider')
+            }
+            setLoading(false)
+          }, (err) => {
+            console.error('Realtime error in AuthProvider profile listener:', err)
+            setLoading(false)
+          })
         } catch (err) {
-          console.error('Error fetching user profile in AuthProvider:', err)
+          console.error('Error attaching realtime profile listener in AuthProvider:', err)
           setUserProfile(null)
-          setUserRole('rider') // Fallback default role
+          setUserRole('rider')
+          setLoading(false)
         }
       } else {
         setUserProfile(null)
         setUserRole(null)
+        setLoading(false)
       }
-
-      setLoading(false)
     })
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe()
+    // Cleanup subscriptions on unmount
+    return () => {
+      if (profileUnsubscribe) profileUnsubscribe()
+      unsubscribeAuth()
+    }
   }, [])
 
   // Context helper wrappers

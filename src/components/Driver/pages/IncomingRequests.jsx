@@ -7,47 +7,58 @@ import './IncomingRequests.css'
 
 /**
  * IncomingRequests Page Component
- * Manages real-time Firestore queue of incoming passenger ride requests with acceptance/rejection handlers.
+ * Manages real-time Firestore queue of incoming passenger ride requests via onSnapshot listeners.
+ * Updates instantly whenever new ride requests broadcast without page refresh.
  */
 const IncomingRequests = ({ isOnline, onAcceptRide }) => {
   const { currentUser, userProfile } = useAuth()
   const [requests, setRequests] = useState([])
   const [loadingReqs, setLoadingReqs] = useState(true)
-
-  const fetchPendingRequests = async () => {
-    setLoadingReqs(true)
-    try {
-      const pendingRides = await rideService.getPendingRides()
-      const formatted = pendingRides.map((r) => ({
-        id: r.id,
-        passenger: {
-          name: r.riderName || r.passenger?.name || 'Elena Rostova',
-          rating: Number(r.riderRating || r.passenger?.rating || 4.88),
-          photo: r.riderPhoto || r.passenger?.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-          phone: r.riderPhone || r.passenger?.phone || '+1 (555) 019-2834',
-          tripsCount: r.tripsCount || 42
-        },
-        pickup: r.pickup || '742 Evergreen Terrace, San Francisco',
-        dropoff: r.destination || r.dropoff || 'Union Square, Downtown SF',
-        distance: r.distance || '4.2 km',
-        estTime: r.duration || r.estTime || '12 mins',
-        fare: Number(r.fare || 24.50),
-        surge: r.surge || '1.2x High Demand',
-        pickupDistance: r.pickupDistance || '0.8 km (3 mins away)',
-        note: r.note || 'Waiting near main entrance'
-      }))
-      setRequests(formatted)
-    } catch (err) {
-      console.error('Error loading Firestore pending requests:', err)
-      setRequests(mockRideRequests)
-    } finally {
-      setLoadingReqs(false)
-    }
-  }
+  const [errorReqs, setErrorReqs] = useState(null)
 
   useEffect(() => {
-    if (isOnline) {
-      fetchPendingRequests()
+    if (!isOnline) {
+      setRequests([])
+      setLoadingReqs(false)
+      return () => {}
+    }
+
+    setLoadingReqs(true)
+    setErrorReqs(null)
+
+    // REAL-TIME ONSNAPSHOT LISTENER for requested rides
+    const unsubscribe = rideService.subscribeToPendingRides(
+      (pendingRides) => {
+        const formatted = pendingRides.map((r) => ({
+          id: r.id,
+          passenger: {
+            name: r.riderName || r.passenger?.name || 'Elena Rostova',
+            rating: Number(r.riderRating || r.passenger?.rating || 4.88),
+            photo: r.riderPhoto || r.passenger?.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+            phone: r.riderPhone || r.passenger?.phone || '+1 (555) 019-2834',
+            tripsCount: r.tripsCount || 42
+          },
+          pickup: r.pickup || '742 Evergreen Terrace, San Francisco',
+          dropoff: r.destination || r.dropoff || 'Union Square, Downtown SF',
+          distance: r.distance || '4.2 km',
+          estTime: r.duration || r.estTime || '12 mins',
+          fare: Number(r.fare || 24.50),
+          surge: r.surge || '1.2x High Demand',
+          pickupDistance: r.pickupDistance || '0.8 km (3 mins away)',
+          note: r.note || 'Waiting near main entrance'
+        }))
+        setRequests(formatted)
+        setLoadingReqs(false)
+      },
+      (err) => {
+        console.error('Realtime error loading pending ride requests:', err)
+        setErrorReqs('Failed to sync live incoming ride queue.')
+        setLoadingReqs(false)
+      }
+    )
+
+    return () => {
+      if (unsubscribe) unsubscribe()
     }
   }, [isOnline])
 
@@ -84,7 +95,7 @@ const IncomingRequests = ({ isOnline, onAcceptRide }) => {
 
     try {
       await rideService.createRideRequest(newReqPayload)
-      await fetchPendingRequests()
+      // No need to call fetchPendingRequests()! onSnapshot listener updates automatically!
     } catch (err) {
       console.error('Error simulating ride in Firestore:', err)
     }
@@ -96,7 +107,7 @@ const IncomingRequests = ({ isOnline, onAcceptRide }) => {
         <div className="offline-icon">☕</div>
         <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#000', marginBottom: '8px' }}>You are currently Offline</h3>
         <p style={{ maxWidth: '400px', margin: '0 auto 20px' }}>
-          Switch your status to <strong>ONLINE</strong> at the top of the dashboard to start receiving incoming passenger ride requests.
+          Switch your status to <strong>ONLINE</strong> at the top of the dashboard to start receiving incoming passenger ride requests in real-time.
         </p>
       </div>
     )
@@ -106,19 +117,22 @@ const IncomingRequests = ({ isOnline, onAcceptRide }) => {
     <div className="incoming-req-container">
       <div className="incoming-hdr-row">
         <div className="incoming-title">
-          <span>📡 Incoming Ride Requests (Firestore Queue)</span>
+          <span>📡 Incoming Ride Requests (Real-Time Live Queue)</span>
           <span className="req-count-badge">{requests.length} Active</span>
         </div>
         <button type="button" className="btn-simulate-req" onClick={handleSimulateNew}>
           ⚡ Simulate New Request
         </button>
       </div>
+      {errorReqs && <div style={{ color: '#d32f2f', fontSize: '14px', marginBottom: '8px' }}>⚠️ {errorReqs}</div>}
 
-      {requests.length === 0 && !loadingReqs ? (
+      {loadingReqs ? (
+        <div style={{ padding: '40px', textAlign: 'center', fontSize: '16px', color: '#666' }}>⏳ Scanning real-time broadcast queue via onSnapshot...</div>
+      ) : requests.length === 0 ? (
         <div className="offline-notice-box" style={{ padding: '32px' }}>
           <div className="offline-icon">🔍</div>
           <h4 style={{ fontSize: '18px', fontWeight: '700', color: '#000' }}>No incoming requests right now</h4>
-          <p style={{ marginTop: '8px' }}>We are broadcasting your location to nearby passengers. Click "Simulate New Request" above to test!</p>
+          <p style={{ marginTop: '8px' }}>We are broadcasting your location to nearby passengers. Click "Simulate New Request" above to test real-time reception!</p>
         </div>
       ) : (
         <div>

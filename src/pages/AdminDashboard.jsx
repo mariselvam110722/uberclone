@@ -5,11 +5,13 @@ import DriverVerificationPage from '../components/Admin/pages/DriverVerification
 import FleetOverviewPage from '../components/Admin/pages/FleetOverviewPage'
 import AnalyticsPage from '../components/Admin/pages/AnalyticsPage'
 import ReportsPage from '../components/Admin/pages/ReportsPage'
+import NotificationBell from '../components/common/NotificationBell'
 import './AdminDashboard.css'
 
 /**
  * AdminDashboard Component (Master Container)
- * Orchestrates platform-wide command view, user governance, fleet dispatch telemetry, and financial analytics.
+ * Orchestrates platform-wide command view, user governance, real-time fleet telemetry, and financial analytics.
+ * Includes real-time push notifications in the command center header via onSnapshot.
  */
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview') // 'overview' | 'users' | 'verification' | 'fleet' | 'analytics' | 'reports'
@@ -27,12 +29,15 @@ const AdminDashboard = () => {
     <div className="admin-dashboard-master">
       <div className="admin-top-header">
         <div className="admin-title-box">
-          <h1>🛠️ Uber Smart Platform Command Center</h1>
+          <h1>🛠️ Uber Smart Platform Command Center (Real-Time Live)</h1>
           <p>Full administrative governance over user directories, driver vetting, real-time fleet heat maps, and revenue audits</p>
         </div>
-        <div className="system-health-pill">
-          <span className="health-pulse-dot"></span>
-          <span>System Status: Optimal & Online</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="system-health-pill">
+            <span className="health-pulse-dot"></span>
+            <span>System Status: Optimal & Online</span>
+          </div>
+          <NotificationBell />
         </div>
       </div>
 

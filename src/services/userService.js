@@ -6,44 +6,45 @@ import {
   deleteDoc, 
   collection, 
   getDocs, 
+  query, 
+  where,
+  onSnapshot,
   serverTimestamp 
 } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import { mockUsers } from '../mock/adminMockData'
+import { mockRiderProfile } from '../mock/riderMockData'
 
 /**
- * User Service (Firestore CRUD & Auth Profile Management)
- * Encapsulates operations for the 'users' collection in Firebase Firestore.
- * Supports Create, Read, Update, Delete (CRUD) and automatic seeding.
+ * User Service (Firestore CRUD, Directory & Real-Time Profile Tracking)
+ * Encapsulates operations for the 'users' collection in Firebase Firestore with onSnapshot support.
  */
 export const userService = {
   /**
-   * CREATE: Creates a new user document in Firestore.
-   * @param {string} uid - Unique User ID.
-   * @param {Object} userData - User metadata.
+   * CREATE: Creates a new user profile document in Firestore.
    */
-  async createUser(uid, userData) {
+  async createUser(uid, data = {}) {
     try {
-      if (!uid) throw new Error('Valid UID is required to create a user.')
-      const userDocRef = doc(db, 'users', uid)
+      if (!uid) throw new Error('User UID is required to create a profile.')
+      const userRef = doc(db, 'users', uid)
       
       const payload = {
         uid,
-        email: userData.email || '',
-        displayName: userData.displayName || userData.name || 'Uber User',
-        photoURL: userData.photoURL || userData.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-        role: (userData.role || 'rider').toLowerCase(),
-        wallet: userData.wallet !== undefined ? userData.wallet : (userData.walletBalance !== undefined ? userData.walletBalance : 150.00),
-        rating: userData.rating !== undefined ? userData.rating : 5.0,
-        preferences: userData.preferences || { notifications: true, autoPay: true, language: 'en' },
-        tripHistory: userData.tripHistory || [],
-        phone: userData.phone || '+1 (555) 000-0000',
-        status: userData.status || 'Active',
+        email: data.email || '',
+        displayName: data.displayName || data.name || 'New Uber User',
+        role: data.role || 'rider',
+        phone: data.phone || '+1 (555) 000-0000',
+        photoURL: data.photoURL || data.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+        rating: data.rating !== undefined ? data.rating : 5.0,
+        wallet: data.wallet !== undefined ? data.wallet : 150.00,
+        status: data.status || 'Active',
+        preferencesList: data.preferencesList || mockRiderProfile.preferences,
+        savedAddresses: data.savedAddresses || mockRiderProfile.savedAddresses,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       }
 
-      await setDoc(userDocRef, payload, { merge: true })
+      await setDoc(userRef, payload, { merge: true })
       return { id: uid, ...payload }
     } catch (error) {
       console.error('Error in userService.createUser:', error)
@@ -52,34 +53,115 @@ export const userService = {
   },
 
   /**
-   * READ: Fetches a single user's profile document from Firestore by their UID.
-   * @param {string} uid - The Firebase Auth User ID.
-   * @returns {Promise<Object|null>} The user profile object or null if not found.
+   * READ: Fetches a single user profile from Firestore by UID.
    */
   async getUserProfile(uid) {
     try {
       if (!uid) return null
-      const userDocRef = doc(db, 'users', uid)
-      const docSnap = await getDoc(userDocRef)
+      const userRef = doc(db, 'users', uid)
+      const docSnap = await getDoc(userRef)
       if (docSnap.exists()) {
-        const data = docSnap.data()
-        return { 
-          id: docSnap.id, 
-          ...data,
-          // Ensure compatibility with UI requiring lowercase role
-          role: data.role ? data.role.toLowerCase() : 'rider' 
-        }
+        return { id: docSnap.id, ...docSnap.data() }
       }
       return null
     } catch (error) {
-      console.error('Error fetching user profile from Firestore:', error)
+      console.error('Error in userService.getUserProfile:', error)
       throw error
     }
   },
 
   /**
-   * READ ALL: Retrieves all user profiles from Firestore. Seeds mock data if collection is empty.
-   * @returns {Promise<Array>} Array of user objects.
+   * CREATE OR UPDATE: Helper for Auth flow to initialize or update profile.
+   */
+  async createOrUpdateUserProfile(user, additionalData = {}) {
+    try {
+      if (!user?.uid) return null
+      const existing = await this.getUserProfile(user.uid)
+      if (existing) {
+        if (Object.keys(additionalData).length > 0) {
+          await this.updateUserProfile(user.uid, additionalData)
+          return { ...existing, ...additionalData }
+        }
+        return existing
+      }
+      return await this.createUser(user.uid, {
+        email: user.email || '',
+        displayName: user.displayName || additionalData.displayName || 'Uber User',
+        role: additionalData.role || 'rider',
+        phone: additionalData.phone || '+1 (555) 000-0000',
+        photoURL: user.photoURL || additionalData.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+        wallet: 150.00
+      })
+    } catch (error) {
+      console.error('Error in createOrUpdateUserProfile:', error)
+      return null
+    }
+  },
+
+  /**
+   * UPDATE ROLE: Updates user role.
+   */
+  async updateUserRole(uid, role) {
+    try {
+      await this.updateUserProfile(uid, { role })
+      return role
+    } catch (error) {
+      console.error('Error in updateUserRole:', error)
+      throw error
+    }
+  },
+
+  /**
+   * REAL-TIME SUBSCRIPTION: Subscribes to all users in Firestore with onSnapshot.
+   */
+  subscribeToAllUsers(callback, onError) {
+    try {
+      const usersRef = collection(db, 'users')
+      const unsubscribe = onSnapshot(usersRef, async (snapshot) => {
+        if (snapshot.empty) {
+          const seeded = await this.getAllUsers()
+          callback(seeded)
+          return
+        }
+        const users = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+        callback(users)
+      }, (error) => {
+        console.error('Realtime error on subscribeToAllUsers:', error)
+        if (onError) onError(error)
+      })
+      return unsubscribe
+    } catch (error) {
+      console.error('Error starting subscribeToAllUsers:', error)
+      return () => {}
+    }
+  },
+
+  /**
+   * REAL-TIME SUBSCRIPTION: Subscribes to a single user profile document by UID.
+   */
+  subscribeToUserProfile(uid, callback, onError) {
+    if (!uid) return () => {}
+    try {
+      const userRef = doc(db, 'users', uid)
+      const unsubscribe = onSnapshot(userRef, (snap) => {
+        if (snap.exists()) {
+          callback({ id: snap.id, ...snap.data() })
+        } else {
+          callback(null)
+        }
+      }, (error) => {
+        console.error('Realtime error on subscribeToUserProfile:', error)
+        if (onError) onError(error)
+      })
+      return unsubscribe
+    } catch (error) {
+      console.error('Error starting subscribeToUserProfile:', error)
+      return () => {}
+    }
+  },
+
+  /**
+   * READ ALL: Retrieves all user records from Firestore. Auto-seeds if empty.
    */
   async getAllUsers() {
     try {
@@ -90,120 +172,60 @@ export const userService = {
         console.warn('Firestore users collection is empty. Auto-seeding initial users...')
         const seededUsers = []
         for (const u of mockUsers) {
-          const uid = u.id || `usr-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`
+          const uid = u.id || `usr-${Math.random().toString(36).substr(2, 5)}`
           const created = await this.createUser(uid, {
             email: u.email,
             displayName: u.name,
-            role: u.role.toLowerCase(),
-            status: u.status,
-            rating: u.rating,
+            role: u.role ? u.role.toLowerCase() : 'rider',
             phone: u.phone,
             photoURL: u.photo,
-            wallet: u.walletBalance || 150.00,
-            tripHistory: []
+            rating: u.rating,
+            wallet: u.walletBalance !== undefined ? u.walletBalance : 150.00,
+            status: u.status
           })
           seededUsers.push(created)
         }
         return seededUsers
       }
 
-      return snapshot.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-        name: d.data().displayName || d.data().name || 'Uber User',
-        role: d.data().role ? d.data().role.charAt(0).toUpperCase() + d.data().role.slice(1).toLowerCase() : 'Rider'
+      return snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data()
       }))
     } catch (error) {
-      console.error('Error fetching all users:', error)
-      return mockUsers
+      console.error('Error in userService.getAllUsers:', error)
+      return []
     }
   },
 
   /**
-   * CREATE OR UPDATE: Initializes or updates user profile upon authentication login/registration.
-   * Stores: uid, role, wallet, rating, preferences, tripHistory, createdAt.
-   */
-  async createOrUpdateUserProfile(user, additionalData = {}) {
-    try {
-      if (!user || !user.uid) throw new Error('Valid user object with UID is required.')
-
-      const userDocRef = doc(db, 'users', user.uid)
-      const existingProfile = await this.getUserProfile(user.uid)
-
-      const profileData = {
-        uid: user.uid,
-        email: user.email || '',
-        displayName: user.displayName || additionalData.displayName || existingProfile?.displayName || 'Uber User',
-        photoURL: user.photoURL || existingProfile?.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-        role: (existingProfile?.role || additionalData.role || 'rider').toLowerCase(),
-        wallet: existingProfile?.wallet !== undefined ? existingProfile.wallet : 150.00,
-        rating: existingProfile?.rating !== undefined ? existingProfile.rating : 5.0,
-        preferences: existingProfile?.preferences || { notifications: true, autoPay: true, language: 'en' },
-        tripHistory: existingProfile?.tripHistory || [],
-        phone: existingProfile?.phone || additionalData.phone || '+1 (555) 234-5678',
-        status: existingProfile?.status || 'Active',
-        lastLoginAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      }
-
-      if (!existingProfile) {
-        profileData.createdAt = serverTimestamp()
-      }
-
-      await setDoc(userDocRef, profileData, { merge: true })
-      return { id: user.uid, ...profileData }
-    } catch (error) {
-      console.error('Error creating/updating user profile:', error)
-      throw error
-    }
-  },
-
-  /**
-   * UPDATE: Updates a user's assigned role ('rider' | 'driver' | 'admin').
-   */
-  async updateUserRole(uid, role) {
-    try {
-      if (!uid) throw new Error('User ID required.')
-      const userDocRef = doc(db, 'users', uid)
-      await updateDoc(userDocRef, { 
-        role: role.toLowerCase(),
-        updatedAt: serverTimestamp() 
-      })
-      return role.toLowerCase()
-    } catch (error) {
-      console.error('Error updating user role:', error)
-      throw error
-    }
-  },
-
-  /**
-   * UPDATE: Updates user profile attributes (e.g., wallet balance, preferences, status).
+   * UPDATE: Updates general profile fields.
    */
   async updateUserProfile(uid, updates = {}) {
     try {
-      if (!uid) throw new Error('User ID required.')
-      const userDocRef = doc(db, 'users', uid)
-      await updateDoc(userDocRef, {
+      if (!uid) throw new Error('User UID required.')
+      const userRef = doc(db, 'users', uid)
+      await updateDoc(userRef, {
         ...updates,
         updatedAt: serverTimestamp()
       })
     } catch (error) {
-      console.error('Error updating profile attributes:', error)
+      console.error('Error in userService.updateUserProfile:', error)
       throw error
     }
   },
 
   /**
-   * DELETE: Deletes a user profile document from Firestore.
+   * DELETE: Deletes a user profile record from Firestore.
    */
   async deleteUserProfile(uid) {
     try {
-      if (!uid) throw new Error('User ID required for deletion.')
-      const userDocRef = doc(db, 'users', uid)
-      await deleteDoc(userDocRef)
+      if (!uid) throw new Error('User UID required.')
+      const userRef = doc(db, 'users', uid)
+      await deleteDoc(userRef)
       return true
     } catch (error) {
-      console.error('Error deleting user profile:', error)
+      console.error('Error in userService.deleteUserProfile:', error)
       throw error
     }
   }
